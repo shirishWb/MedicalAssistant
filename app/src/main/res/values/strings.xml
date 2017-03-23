@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">MedicalAssistant</string>
+    <string name="serviceKeyEmail">email</string>
+    <string name="serviceKeyPassword">password</string>
+    <string name="serviceKeyName">name</string>
+    <string name="serviceKeyMoblNo">mobileNo</string>
+    <string name="serviceKeyImageProf">image</string>
+    <string name="serverURL">http://192.168.0.103/doctor/</string>
+    <string name="serviceKeySuccess">success</string>
+    <string name="serviceKeySuccessValue">1</string>
+    <string name="SignUpURL">register.php</string>
+    <string name="LoginURL">login.php</string>
+
+    <string name="SharPrfUID">shar_prf_uid</string>
+    <string name="serviceKeyUID">uid</string>
+    <string name="serviceKeyProfData">Profile</string>
+    <string name="serviceKeyMsg">message</string>
+    <string name="SharPrfName">shar_prf_name</string>
+    <string name="SharPrfCityName">shar_prf_city_name</string>
+    <string name="serviceKeyCityName">cityName</string>
+    <string name="SharPrfCountryName">shar_prf_country_name</string>
+    <string name="serviceKeyCountryName">countryName</string>
+    <string name="SharPrfMobileNo">shar_prf_mob_no</string>
+    <string name="serviceKeyMobileNo">mobileNo</string>
+    <string name="SharPrfEmail">shar_prf_email</string>
+    <string name="SharPrfProImg">shar_prf_prof_img</string>
 </resources>
