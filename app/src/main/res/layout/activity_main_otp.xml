@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context="com.whitebirdtechnology.medicalassistant.SignUpScreen.MainActivityOTP">
+
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="0dp"
+            android:layout_height="400dp"
+            android:background="@color/white"
+            android:layout_marginTop="150dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="Enter One Time Password(OTP) we just send to 8149783746"
+                android:textColor="@color/black"
+                android:textSize="9sp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginTop="150dp"
+                android:id="@+id/textViewMobNo"/>
+            <EditText
+                android:layout_width="175dp"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_edit_text"
+                app:layout_constraintTop_toBottomOf="@+id/textViewMobNo"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="60dp"
+                android:hint="Enter OTP here"
+                android:id="@+id/editTextOTP"
+                android:drawableLeft="@drawable/lock_icon"
+                android:drawablePadding="10dp"
+                android:paddingLeft="10dp"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@+id/textViewMobNo"
+                app:layout_constraintLeft_toRightOf="@+id/editTextOTP"
+                android:layout_marginTop="15dp"
+                android:text="NEXT"
+                android:gravity="center"
+                android:id="@+id/textViewNext"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginRight="40dp"
+                android:background="@color/blue_button"
+                android:textColor="@color/white"
+                style="@style/Base.TextAppearance.AppCompat.Button"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextOTP"
+                android:textSize="9sp"
+                android:layout_marginTop="25dp"
+                android:id="@+id/textViewNotReceive"
+                android:textColor="@color/gray"
+                android:text="Generating OTP usually take 1 min. Did not received?"
+                android:layout_marginLeft="60dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toRightOf="@+id/textViewNotReceive"
+                android:text="Get OTP again"
+                android:textColor="@color/light_blue_chat"
+                android:textSize="9sp"
+                android:id="@+id/textViewGetOTPAgain"
+                app:layout_constraintTop_toBottomOf="@+id/editTextOTP"
+                android:layout_marginTop="25dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewNotReceive"
+                android:textSize="9sp"
+                android:layout_marginTop="1dp"
+                android:id="@+id/textViewWrongNo"
+                android:textColor="@color/gray"
+                android:text="Entered wrong number?" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintLeft_toRightOf="@+id/textViewWrongNo"
+                android:text="Try again"
+                android:textColor="@color/light_blue_chat"
+                android:textSize="9sp"
+                android:id="@+id/textViewTryAgain"
+                app:layout_constraintTop_toBottomOf="@+id/textViewNotReceive"
+                android:layout_marginTop="1dp"/>
+        </android.support.constraint.ConstraintLayout>
+
+
+        <android.support.v7.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="75dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="85dp"
+            app:cardElevation="0dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="75dp"
+                app:cardElevation="0dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:scaleType="centerCrop"
+                    android:id="@+id/imageViewProf"
+                    android:src="@drawable/category_icon" />
+            </android.support.v7.widget.CardView>
+        </android.support.v7.widget.CardView>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="1dp"
+        android:textColor="@color/white"
+        android:text="Signup"
+        android:id="@+id/textViewSignUp"
+        style="@style/Base.TextAppearance.AppCompat.Widget.Button"
+        android:gravity="center"/>
+</android.support.constraint.ConstraintLayout>

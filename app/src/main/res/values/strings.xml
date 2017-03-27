@@ -5,7 +5,7 @@
     <string name="serviceKeyName">name</string>
     <string name="serviceKeyMoblNo">mobileNo</string>
     <string name="serviceKeyImageProf">image</string>
-    <string name="serverURL">http://192.168.0.103/doctor/</string>
+    <string name="serverURL">http://192.168.0.100/doctor/</string>
     <string name="serviceKeySuccess">success</string>
     <string name="serviceKeySuccessValue">1</string>
     <string name="SignUpURL">register.php</string>
@@ -24,4 +24,10 @@
     <string name="serviceKeyMobileNo">mobileNo</string>
     <string name="SharPrfEmail">shar_prf_email</string>
     <string name="SharPrfProImg">shar_prf_prof_img</string>
+    <string name="byExpertURL">list.php</string>
+    <string name="serviceKeyArrayExpert">list</string>
+    <string name="serviceKeyLoc">location</string>
+    <string name="serviceKeyOccupation">occupation</string>
+    <string name="serviceKeyTotalObj">count</string>
+    <string name="serviceKeyItem">item</string>
 </resources>

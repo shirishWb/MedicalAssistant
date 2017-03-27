@@ -33,7 +33,8 @@
         <activity
             android:name=".SignUpScreen.MainActivityOTP"
             android:theme="@style/launchTheme" />
-        <activity android:name=".HomeScreen.MainActivityHomeScreen"></activity>
+        <activity android:name=".HomeScreen.MainActivityHomeScreen"
+            ></activity>
     </application>
 
 </manifest>
