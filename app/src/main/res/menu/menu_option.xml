@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="More Info"
+        android:id="@+id/menuItemMoreInfo"
+        app:showAsAction="never"
+        />
+    <item android:title="Book Appointments"
+        android:id="@+id/menuItemBook"
+        app:showAsAction="never"/>
+    <item android:title="Share"
+        android:id="@+id/menuItemShare"
+        app:showAsAction="never"
+        />
+    <item android:title="Notifications"
+        android:id="@+id/menuItemNotify"
+        app:showAsAction="never"/>
+    <item android:title="Help"
+        android:id="@+id/menuItemHelp"
+        app:showAsAction="never"
+        />
+    <item android:title="Log Out"
+        android:id="@+id/menuItemLogOut"
+        app:showAsAction="never"/>
+
+</menu>

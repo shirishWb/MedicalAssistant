@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.CardView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="30dip"
+        android:id="@+id/cardView"
+        android:elevation="2dp">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:id="@+id/imageViewProfChatSend"
+            android:scaleType="fitXY"
+            android:src="@drawable/expert_icon_big"/>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="50dp"
+        app:layout_constraintRight_toLeftOf="@+id/cardView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardCornerRadius="10dip"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:id="@+id/cardViewChat"
+        app:cardBackgroundColor="@color/chat_sender_view"
+        android:elevation="2dp"
+        android:layout_marginTop="26dp"
+        app:layout_constraintHorizontal_bias="0.0">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/chat_sender_view">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:id="@+id/textViewChatMsg"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="10:00 pm"
+            android:layout_gravity="bottom"
+            android:textSize="10sp"
+            android:layout_below="@+id/textViewChatMsg"
+            android:layout_marginTop="10dp"
+            android:id="@+id/textViewChatTime"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+
+</android.support.constraint.ConstraintLayout>

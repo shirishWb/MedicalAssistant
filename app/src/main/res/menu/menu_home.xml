@@ -13,8 +13,8 @@
     android:id="@+id/menuItemMoreInfo"
     app:showAsAction="never"
     />
-    <item android:title="Block Appointments"
-        android:id="@+id/menuItemBlock"
+    <item android:title="Book Appointments"
+        android:id="@+id/menuItemBook"
         app:showAsAction="never"/>
     <item android:title="Share"
         android:id="@+id/menuItemShare"

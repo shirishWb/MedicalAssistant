@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ public class ByExpertTab extends Fragment implements ServerResponse,AbsListView.
     boolean loading =false;
     int previousTotal = 0;
     int visibleThrishold =5;
+    View footerView;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class ByExpertTab extends Fragment implements ServerResponse,AbsListView.
         HashMap<String,String> params = new HashMap<>();
         params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
         params.put(getString(R.string.serviceKeyItem), String.valueOf(item));
+        params.put(getString(R.string.serviceKeyCateId),"0");
         new BackgroundTaskFragment(this,params,getString(R.string.byExpertURL)).execute();
         /*arrayList = new ArrayList<>();
         for(int i=0;i<5;i++) {
@@ -59,7 +62,7 @@ public class ByExpertTab extends Fragment implements ServerResponse,AbsListView.
         }*/
         listAdapterByExpert = new ListAdapterByExpert(getActivity(),SingListByExpert.getInstance().arrayListByExpert);
         listViewExpert.setAdapter(listAdapterByExpert);
-        View footerView = inflater.inflate(R.layout.progress_bar_list,container,false);
+        footerView = inflater.inflate(R.layout.progress_bar_list,container,false);
         listViewExpert.addFooterView(footerView,null,true);
         listViewExpert.setOnScrollListener(this);
         return view;
@@ -67,6 +70,7 @@ public class ByExpertTab extends Fragment implements ServerResponse,AbsListView.
 
     @Override
     public void Response(String result, String methodKey) {
+        Log.d("result list",result);
         try {
             JSONObject object = new JSONObject(result);
             String success = object.getString(getString(R.string.serviceKeySuccess));
@@ -80,20 +84,23 @@ public class ByExpertTab extends Fragment implements ServerResponse,AbsListView.
                     img.replace("\\","");
                     feedListByExpert.setStringImgPath(img);
                     feedListByExpert.setStringLoc(object1.getString(getString(R.string.serviceKeyLoc)));
-                    feedListByExpert.setStringOccupation(object1.getString(getString(R.string.serviceKeyOccupation)));
+                    feedListByExpert.setStringCategory(object1.getString(getString(R.string.serviceKeyCateName)));
+                    feedListByExpert.setStringCatId(object1.getString(getString(R.string.serviceKeyCateId)));
+                    feedListByExpert.setStringSubCatagory(object1.getString(getString(R.string.serviceKeySubCateName)));
+                    feedListByExpert.setStringSubCatId(object1.getString(getString(R.string.serviceKeySubCateId)));
+                     feedListByExpert.setStringExpertId(object1.getString(getString(R.string.serviceKeyExpertId)));
+                   if(object1.getString(getString(R.string.serviceKeyFav)).equals("1"))
+                        feedListByExpert.setaBooleanFav(true);
+                       else
+                        feedListByExpert.setaBooleanFav(false);
                     if(!SingListByExpert.getInstance().arrayListByExpert.contains(feedListByExpert))
                     SingListByExpert.getInstance().arrayListByExpert.add(feedListByExpert);
                 }
                 listAdapterByExpert.notifyDataSetChanged();
-                String totalCount = object.getString(getString(R.string.serviceKeyTotalObj));
-                int total = Integer.parseInt(totalCount);
-                if(total==SingListByExpert.getInstance().arrayListByExpert.size()) {
-                    LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-                    @SuppressLint("InflateParams") View view = layoutInflater.inflate(R.layout.progress_bar_list,null);
-                    listViewExpert.removeFooterView(view);
-                }
 
-            }
+
+            }else
+                listViewExpert.removeFooterView(footerView);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -117,6 +124,7 @@ public class ByExpertTab extends Fragment implements ServerResponse,AbsListView.
             HashMap<String,String> params = new HashMap<>();
             params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
             params.put(getString(R.string.serviceKeyItem), String.valueOf(item));
+            params.put(getString(R.string.serviceKeyCateId),"0");
             new BackgroundTaskFragment(this,params,getString(R.string.byExpertURL)).execute();
             loading =true;
         }

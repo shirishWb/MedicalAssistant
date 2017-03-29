@@ -16,4 +16,7 @@
     <style name="MyOverFlow" parent="@android:style/Widget.Holo.ActionButton.Overflow">
         <item name="android:src">@drawable/power_button</item>
     </style>
+    <style name="CustomCalender" parent="android:Widget.CalendarView">
+
+    </style>
 </resources>

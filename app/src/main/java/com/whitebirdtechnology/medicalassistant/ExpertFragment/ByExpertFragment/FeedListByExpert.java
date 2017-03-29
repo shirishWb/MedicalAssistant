@@ -5,7 +5,48 @@ package com.whitebirdtechnology.medicalassistant.ExpertFragment.ByExpertFragment
  */
 
 class FeedListByExpert {
-    String stringExpertName,stringOccupation,stringLoc,stringImgPath;
+    String stringExpertName, stringCategory,stringSubCatagory,stringCatId, stringSubCatId,stringLoc,stringImgPath,stringExpertId;
+    Boolean aBooleanFav;
+
+    public String getStringExpertId() {
+        return stringExpertId;
+    }
+
+    public void setStringExpertId(String stringExpertId) {
+        this.stringExpertId = stringExpertId;
+    }
+
+    public Boolean getaBooleanFav() {
+        return aBooleanFav;
+    }
+
+    public void setaBooleanFav(Boolean aBooleanFav) {
+        this.aBooleanFav = aBooleanFav;
+    }
+
+    public String getStringSubCatagory() {
+        return stringSubCatagory;
+    }
+
+    public void setStringSubCatagory(String stringSubCatagory) {
+        this.stringSubCatagory = stringSubCatagory;
+    }
+
+    public String getStringCatId() {
+        return stringCatId;
+    }
+
+    public void setStringCatId(String stringCatId) {
+        this.stringCatId = stringCatId;
+    }
+
+    public String getStringSubCatId() {
+        return stringSubCatId;
+    }
+
+    public void setStringSubCatId(String stringSubCatId) {
+        this.stringSubCatId = stringSubCatId;
+    }
 
     public String getStringExpertName() {
         return stringExpertName;
@@ -15,12 +56,12 @@ class FeedListByExpert {
         this.stringExpertName = stringExpertName;
     }
 
-    public String getStringOccupation() {
-        return stringOccupation;
+    public String getStringCategory() {
+        return stringCategory;
     }
 
-    public void setStringOccupation(String stringOccupation) {
-        this.stringOccupation = stringOccupation;
+    public void setStringCategory(String stringCategory) {
+        this.stringCategory = stringCategory;
     }
 
     public String getStringLoc() {

@@ -15,15 +15,5 @@ import com.whitebirdtechnology.medicalassistant.R;
  */
 
 public class HomeTab extends Fragment {
-    GridView gridViewCategories;
-    GridViewCategorieAdapter gridViewCategorieAdapter;
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home_tab,container,false);
-        gridViewCategories = (GridView)view.findViewById(R.id.gridViewCategory);
-        gridViewCategorieAdapter = new GridViewCategorieAdapter(getActivity());
-        gridViewCategories.setAdapter(gridViewCategorieAdapter);
-        return view;
-    }
+
 }

@@ -1,9 +1,13 @@
 package com.whitebirdtechnology.medicalassistant.LogInScreen;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,9 +30,28 @@ public class MainActivityLogInScreen extends AppCompatActivity implements View.O
     TextView textViewLogin,textViewSignUp,textViewFbLogin;
     String stringPass,stringEmail;
     ClsSharePreference clsSharePreference;
+    ActionBar.LayoutParams params;
+    TextView Title;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        View view = getLayoutInflater().inflate(R.layout.action_bar_layout, null);
+        params = new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER);
+
+        Title = (TextView) view.findViewById(R.id.actionbar_title);
+        Title.setText("Log In");
+
+        getSupportActionBar().setCustomView(view,params);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME); //show custom title
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
         setContentView(R.layout.activity_main_log_in_screen);
         editTextEmail = (EditText)findViewById(R.id.editTextEmail);
         editTextPassword = (EditText)findViewById(R.id.editTextPassword);
@@ -40,6 +63,11 @@ public class MainActivityLogInScreen extends AppCompatActivity implements View.O
         textViewLogin.setOnClickListener(this);
         textViewFbLogin.setOnClickListener(this);
 
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return super.onCreateOptionsMenu(menu);
     }
     boolean isEmailValid() {
         stringEmail = editTextEmail.getText().toString();
@@ -62,8 +90,12 @@ public class MainActivityLogInScreen extends AppCompatActivity implements View.O
             HashMap<String,String> params = new HashMap<>();
             params.put(getString(R.string.serviceKeyEmail),stringEmail);
             params.put(getString(R.string.serviceKeyPassword),stringPass);
+            params.put(getString(R.string.serviceKeyFlagCate),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUserType)));
             new BackgroundTask(this,params,getString(R.string.LoginURL)).execute();
-
+            editTextPassword.setText("");
+            editTextEmail.setText("");
+            stringEmail ="";
+            stringPass= "";
         }
         if(v==textViewSignUp){
             startActivity(new Intent(MainActivityLogInScreen.this, MainActivitySignUp.class));
@@ -72,6 +104,7 @@ public class MainActivityLogInScreen extends AppCompatActivity implements View.O
 
     @Override
     public void Response(String result, String methodKey) {
+        Log.d("resultLogin",result);
         try {
             JSONObject object = new JSONObject(result);
             String success = object.getString(getString(R.string.serviceKeySuccess));
@@ -82,6 +115,7 @@ public class MainActivityLogInScreen extends AppCompatActivity implements View.O
                 clsSharePreference.SetSharePref(getString(R.string.SharPrfEmail),object1.getString(getString(R.string.serviceKeyEmail)));
                 clsSharePreference.SetSharePref(getString(R.string.SharPrfName),object1.getString(getString(R.string.serviceKeyName)));
                 clsSharePreference.SetSharePref(getString(R.string.SharPrfMobileNo),object1.getString(getString(R.string.serviceKeyMobileNo)));
+                clsSharePreference.SetSharePref(getString(R.string.SharPrfProImg),object1.getString(getString(R.string.serviceKeyImageProf)));
                 Toast.makeText(this, object.getString(getString(R.string.serviceKeyMsg)), Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(MainActivityLogInScreen.this, MainActivityHomeScreen.class));
             }else {
@@ -90,5 +124,14 @@ public class MainActivityLogInScreen extends AppCompatActivity implements View.O
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

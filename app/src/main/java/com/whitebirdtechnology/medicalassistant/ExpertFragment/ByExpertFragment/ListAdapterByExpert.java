@@ -1,10 +1,10 @@
 package com.whitebirdtechnology.medicalassistant.ExpertFragment.ByExpertFragment;
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.LayoutRes;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
@@ -12,16 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.whitebirdtechnology.medicalassistant.ChatScreen.MainActivityChat;
 import com.whitebirdtechnology.medicalassistant.R;
-import com.whitebirdtechnology.medicalassistant.Server.ImageDownloaderTask;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.Inflater;
 
 /**
  * Created by dell on 23/3/17.
@@ -56,10 +53,10 @@ public class ListAdapterByExpert extends ArrayAdapter{
             // View is being recycled, retrieve the viewHolder object from tag
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        FeedListByExpert feedListByExpert = (FeedListByExpert) getItem(position);
+        final FeedListByExpert feedListByExpert = (FeedListByExpert) getItem(position);
         viewHolder.name.setText(feedListByExpert.getStringExpertName());
         viewHolder.loc.setText(feedListByExpert.getStringLoc());
-        viewHolder.occupation.setText(feedListByExpert.getStringOccupation());
+        viewHolder.occupation.setText(feedListByExpert.getStringCategory()+","+feedListByExpert.getStringSubCatagory());
         if (feedListByExpert.getStringImgPath() != null) {
             final String stringImageURL = feedListByExpert.getStringImgPath();
             if(!stringImageURL.isEmpty()) {
@@ -80,7 +77,20 @@ public class ListAdapterByExpert extends ArrayAdapter{
             }
         } else
             viewHolder.imageViewProf.setVisibility(View.GONE);
-
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, MainActivityChat.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("EName",feedListByExpert.getStringExpertName());
+                bundle.putString("EOccupation",feedListByExpert.getStringCategory()+","+feedListByExpert.getStringSubCatagory());
+                bundle.putString("EImg",feedListByExpert.getStringImgPath());
+                bundle.putString("EId",feedListByExpert.getStringExpertId());
+                bundle.putBoolean("BoolFav",feedListByExpert.getaBooleanFav());
+                intent.putExtra("BundleExpert",bundle);
+                activity.startActivity(intent);
+            }
+        });
         return convertView;
     }
 }

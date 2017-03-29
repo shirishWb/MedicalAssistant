@@ -3,9 +3,8 @@
     <string name="serviceKeyEmail">email</string>
     <string name="serviceKeyPassword">password</string>
     <string name="serviceKeyName">name</string>
-    <string name="serviceKeyMoblNo">mobileNo</string>
     <string name="serviceKeyImageProf">image</string>
-    <string name="serverURL">http://192.168.0.100/doctor/</string>
+    <string name="serverURL">http://whitebird.co.in/doctor/</string>
     <string name="serviceKeySuccess">success</string>
     <string name="serviceKeySuccessValue">1</string>
     <string name="SignUpURL">register.php</string>
@@ -27,7 +26,23 @@
     <string name="byExpertURL">list.php</string>
     <string name="serviceKeyArrayExpert">list</string>
     <string name="serviceKeyLoc">location</string>
-    <string name="serviceKeyOccupation">occupation</string>
     <string name="serviceKeyTotalObj">count</string>
     <string name="serviceKeyItem">item</string>
+    <string name="SharPrfUserType">shar_prf_user_type</string>
+    <string name="serviceKeyFlagCate">flag</string>
+    <string name="serviceKeyCateList">category</string>
+    <string name="serviceKeyCateName">cName</string>
+    <string name="serviceKeyCateId">cid</string>
+    <string name="serviceKeySubCateList">subCategory</string>
+    <string name="serviceKeySubCateName">sName</string>
+    <string name="serviceKeySubCateId">sid</string>
+    <string name="categoryURL">category.php</string>
+    <string name="expertType">1</string>
+    <string name="serviceKeyExpertId">eid</string>
+    <string name="serviceKeyFav">favourite</string>
+    <string name="appointmentDate">apoitnment.php</string>
+    <string name="serviceKeyDate">date</string>
+    <string name="serviceKeyTimeArray">Time</string>
+    <string name="serviceKeyTime">time</string>
+    <string name="favouriteURL">favourite.php</string>
 </resources>

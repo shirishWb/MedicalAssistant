@@ -23,7 +23,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="Enter One Time Password(OTP) we just send to 8149783746"
+                android:text="Enter One Time Password(OTP) we just send to "
                 android:textColor="@color/black"
                 android:textSize="9sp"
                 android:layout_marginLeft="60dp"

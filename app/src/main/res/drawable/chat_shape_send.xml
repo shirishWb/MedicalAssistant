@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="bottom|right" android:width="10dp" android:height="10dp" android:bottom="1dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/chat_receiver_view"/>
+            <corners android:bottomRightRadius="00dp" android:topLeftRadius="00dp"/>
+            <size android:height="20dp" android:width="20dp"/>
+        </shape>
+    </item>
+    <item android:height="20dp" android:width="50dp" android:right="0dp" android:bottom="1dp">
+
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" >
+            <!-- This is the Border Color For TextView-->
+            <!-- "#5D2E8C"  -->
+            <solid android:color="@color/chat_receiver_view" />   <!-- background to the TextView -->
+
+            <corners android:topLeftRadius="20dp"
+                android:topRightRadius="20dp"
+                android:bottomRightRadius="10dp"
+                android:bottomLeftRadius="20dp"/>
+
+        </shape>
+    </item>
+</layer-list>
+
+<!--
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="bottom|right" android:width="10dp" android:height="10dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/lightGray"/>
+            <corners android:bottomLeftRadius="40dp" android:topRightRadius="40dp"/>
+            <size android:height="20dp" android:width="20dp"/>
+        </shape>
+    </item>
+    <item android:height="20dp" android:width="50dp" android:right="1dp" android:bottom="1dp">
+
+        <shape xmlns:android="http://schemas.android.com/apk/res/android" >
+            &lt;!&ndash; This is the Border Color For TextView&ndash;&gt;
+            &lt;!&ndash; "#5D2E8C"  &ndash;&gt;
+            <solid android:color="@color/lightGray" />   &lt;!&ndash; background to the TextView &ndash;&gt;
+
+            <corners android:topLeftRadius="20dp"
+                android:topRightRadius="20dp"
+                android:bottomLeftRadius="20dp"/>
+
+        </shape>
+    </item>
+</layer-list>-->

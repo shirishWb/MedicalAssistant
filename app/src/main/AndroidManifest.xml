@@ -25,16 +25,19 @@
         <activity
             android:name=".LogInScreen.MainActivityLogInScreen"
             android:screenOrientation="portrait"
-            android:theme="@style/launchTheme" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".SignUpScreen.MainActivitySignUp"
             android:screenOrientation="portrait"
-            android:theme="@style/launchTheme" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".SignUpScreen.MainActivityOTP"
-            android:theme="@style/launchTheme" />
-        <activity android:name=".HomeScreen.MainActivityHomeScreen"
-            ></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".HomeScreen.MainActivityHomeScreen" />
+        <activity android:name=".ExpertFragment.ByCategoriesFragment.ListBySpecializationAndName.MainActivitySortedListByCate" />
+        <activity android:name=".ChatScreen.MainActivityChat" />
+        <activity android:name=".ChatScreen.BookAppointmentPage.MainActivityBookAppointment" />
+        <activity android:name=".ChatScreen.BookAppointmentPage.AppointmentTime.MainActivitySetTime"></activity>
     </application>
 
 </manifest>

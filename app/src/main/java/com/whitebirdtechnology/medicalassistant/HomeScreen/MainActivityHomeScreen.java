@@ -56,6 +56,7 @@ public class MainActivityHomeScreen extends AppCompatActivity implements TabLayo
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(this);
+        viewPager.setCurrentItem(2);
 
     }
 
