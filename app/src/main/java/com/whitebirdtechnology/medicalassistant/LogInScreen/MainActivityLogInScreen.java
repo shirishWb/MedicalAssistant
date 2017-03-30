@@ -64,11 +64,11 @@ public class MainActivityLogInScreen extends AppCompatActivity implements View.O
         textViewFbLogin.setOnClickListener(this);
 
     }
-    @Override
+  /*  @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return super.onCreateOptionsMenu(menu);
-    }
+    }*/
     boolean isEmailValid() {
         stringEmail = editTextEmail.getText().toString();
         return android.util.Patterns.EMAIL_ADDRESS.matcher(stringEmail).matches();

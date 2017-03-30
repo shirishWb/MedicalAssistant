@@ -395,11 +395,11 @@ public class MainActivitySignUp extends AppCompatActivity implements View.OnClic
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return super.onCreateOptionsMenu(menu);
-    }
+    }*/
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here

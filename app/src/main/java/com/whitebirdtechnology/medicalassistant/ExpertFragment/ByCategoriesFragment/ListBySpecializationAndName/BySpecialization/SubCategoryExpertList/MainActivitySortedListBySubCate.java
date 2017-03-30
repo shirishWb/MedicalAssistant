@@ -1,18 +1,20 @@
-package com.whitebirdtechnology.medicalassistant.ExpertFragment.ByCategoriesFragment.ListBySpecializationAndName.ByExpertName;
+package com.whitebirdtechnology.medicalassistant.ExpertFragment.ByCategoriesFragment.ListBySpecializationAndName.BySpecialization.SubCategoryExpertList;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.TextView;
 
-import com.whitebirdtechnology.medicalassistant.ExpertFragment.ByExpertFragment.ListAdapterByExpert;
-import com.whitebirdtechnology.medicalassistant.ExpertFragment.ByExpertFragment.SingListByExpert;
 import com.whitebirdtechnology.medicalassistant.R;
+import com.whitebirdtechnology.medicalassistant.Server.BackgroundTask;
 import com.whitebirdtechnology.medicalassistant.Server.BackgroundTaskFragment;
 import com.whitebirdtechnology.medicalassistant.Server.ServerResponse;
 import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreference;
@@ -23,13 +25,11 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-/**
- * Created by dell on 27/3/17.
- */
-
-public class ByExpertName extends Fragment implements ServerResponse,AbsListView.OnScrollListener {
+public class MainActivitySortedListBySubCate extends AppCompatActivity implements ServerResponse, AbsListView.OnScrollListener {
+    ActionBar.LayoutParams params;
+    TextView Title;
     ListView listViewExpert;
-    ListAdapterByExpertName listAdapterByExpert;
+    AdapterListSubCat adapterListSubCat;
     int item =0;
     ClsSharePreference clsSharePreference;
     boolean loading =false;
@@ -37,18 +37,34 @@ public class ByExpertName extends Fragment implements ServerResponse,AbsListView
     int visibleThrishold =5;
     String selCat;
     View footerView;
-    @SuppressLint("ValidFragment")
-    public ByExpertName(String selCat) {
-        this.selCat = selCat;
-    }
-
-    @Nullable
+    @SuppressLint("SetTextI18n")
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.by_expert_tab,container,false);
-        listViewExpert = (ListView)view.findViewById(R.id.listViewExpert);
-        clsSharePreference = new ClsSharePreference(getActivity());
-        SingltonByExpertName.getInstance().arrayListByExpertName.clear();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        View view = getLayoutInflater().inflate(R.layout.action_bar_layout, null);
+        params = new ActionBar.LayoutParams(
+                ActionBar.LayoutParams.WRAP_CONTENT,
+                ActionBar.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER);
+
+        Title = (TextView) view.findViewById(R.id.actionbar_title);
+        Title.setText("Consult Doctor");
+
+        getSupportActionBar().setCustomView(view,params);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME); //show custom title
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+        setContentView(R.layout.activity_main_sorted_list_by_sub_cate);
+        Intent intent = getIntent();
+        selCat = intent.getStringExtra("CatId");
+        Title.setText("Consult "+intent.getStringExtra("CatName"));
+        listViewExpert = (ListView)findViewById(R.id.listViewExpertSub);
+        clsSharePreference = new ClsSharePreference(this);
+        SingltonByExpertSubCat.getInstance().arrayListByExpertName.clear();
         item =0;
         loading =false;
         previousTotal = 0;
@@ -56,16 +72,16 @@ public class ByExpertName extends Fragment implements ServerResponse,AbsListView
         HashMap<String,String> params = new HashMap<>();
         params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
         params.put(getString(R.string.serviceKeyItem), String.valueOf(item));
-        params.put(getString(R.string.serviceKeyCateId),selCat);
-        new BackgroundTaskFragment(this,params,getString(R.string.byExpertURL)).execute();
-        listAdapterByExpert = new ListAdapterByExpertName(getActivity(),SingltonByExpertName.getInstance().arrayListByExpertName);
-        listViewExpert.setAdapter(listAdapterByExpert);
-        footerView = inflater.inflate(R.layout.progress_bar_list,container,false);
+        params.put(getString(R.string.serviceKeyCateId),"-1");
+        params.put(getString(R.string.serviceKeySubCateId),selCat);
+        new BackgroundTask(this,params,getString(R.string.byExpertURL)).execute();
+        adapterListSubCat = new AdapterListSubCat(this,SingltonByExpertSubCat.getInstance().arrayListByExpertName);
+        listViewExpert.setAdapter(adapterListSubCat);
+        LayoutInflater inflater = this.getLayoutInflater();
+        footerView = inflater.inflate(R.layout.progress_bar_list,null);
         listViewExpert.addFooterView(footerView,null,true);
         listViewExpert.setOnScrollListener(this);
-        return view;
     }
-
     @Override
     public void Response(String result, String methodKey) {
         try {
@@ -75,7 +91,7 @@ public class ByExpertName extends Fragment implements ServerResponse,AbsListView
                 JSONArray jsonArray = object.getJSONArray(getString(R.string.serviceKeyArrayExpert));
                 for(int i=0;i<jsonArray.length();i++){
                     JSONObject object1 = jsonArray.getJSONObject(i);
-                    FeedItemListByExpertName feedListByExpert = new FeedItemListByExpertName();
+                    FeedListBySubCatExpert feedListByExpert = new FeedListBySubCatExpert();
                     feedListByExpert.setStringExpertName(object1.getString(getString(R.string.serviceKeyName)));
                     String img = object1.getString(getString(R.string.serviceKeyImageProf));
                     img.replace("\\","");
@@ -89,11 +105,11 @@ public class ByExpertName extends Fragment implements ServerResponse,AbsListView
                     if(object1.getString(getString(R.string.serviceKeyFav)).equals("1"))
                         feedListByExpert.setaBooleanFav(true);
                     else
-                       feedListByExpert.setaBooleanFav(false);
-                    if(!SingltonByExpertName.getInstance().arrayListByExpertName.contains(feedListByExpert))
-                        SingltonByExpertName.getInstance().arrayListByExpertName.add(feedListByExpert);
+                        feedListByExpert.setaBooleanFav(false);
+                    if(!SingltonByExpertSubCat.getInstance().arrayListByExpertName.contains(feedListByExpert))
+                        SingltonByExpertSubCat.getInstance().arrayListByExpertName.add(feedListByExpert);
                 }
-                listAdapterByExpert.notifyDataSetChanged();
+                adapterListSubCat.notifyDataSetChanged();
 
 
             }else
@@ -121,9 +137,19 @@ public class ByExpertName extends Fragment implements ServerResponse,AbsListView
             HashMap<String,String> params = new HashMap<>();
             params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
             params.put(getString(R.string.serviceKeyItem), String.valueOf(item));
-            params.put(getString(R.string.serviceKeyCateId),selCat);
-            new BackgroundTaskFragment(this,params,getString(R.string.byExpertURL)).execute();
+            params.put(getString(R.string.serviceKeyCateId),"-1");
+            params.put(getString(R.string.serviceKeySubCateId),selCat);
+            new BackgroundTask(this,params,getString(R.string.byExpertURL)).execute();
             loading =true;
         }
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

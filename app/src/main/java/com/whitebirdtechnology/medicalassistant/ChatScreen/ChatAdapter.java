@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,35 +21,57 @@ import com.whitebirdtechnology.medicalassistant.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.security.AccessController.getContext;
+
 /**
  * Created by dell on 29/3/17.
  */
 
-public class ChatAdapter extends ArrayAdapter {
+public class ChatAdapter extends BaseAdapter {
+    ArrayList<FeedItemChat> objects;
+    Activity activity;
     public ChatAdapter(@NonNull Activity activity, @NonNull ArrayList<FeedItemChat> objects) {
-        super(activity, 0, objects);
+        this.activity =activity;
+        this.objects = objects;
     }
     private static class ViewHolder {
         TextView msg,time;
         ImageView imageViewProf;
     }
+
+    @Override
+    public int getCount() {
+        return objects.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return objects.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        FeedItemChat feedItemChat = (FeedItemChat) getItem(position);
+        FeedItemChat feedItemChat = objects.get(position);
 
             final ViewHolder viewHolder;
             if(convertView ==null){
                 viewHolder = new ViewHolder();
-                LayoutInflater inflater = LayoutInflater.from(getContext());
+                LayoutInflater inflater = (LayoutInflater) activity
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 if(feedItemChat.getStringFlag().equals("1")) {
-                    convertView = inflater.inflate(R.layout.chat_item_send, parent, false);
+                    convertView = inflater.inflate(R.layout.chat_item_send, null);
                     viewHolder.imageViewProf = (ImageView)convertView.findViewById(R.id.imageViewProfChatSend);
 
                     viewHolder.msg = (TextView)convertView.findViewById(R.id.textViewChatMsg);
                     viewHolder.time = (TextView)convertView.findViewById(R.id.textViewChatTime);
                 }else {
-                    convertView = inflater.inflate(R.layout.chat_item_received, parent, false);
+                    convertView = inflater.inflate(R.layout.chat_item_received, null);
                     viewHolder.imageViewProf = (ImageView)convertView.findViewById(R.id.imageViewProfChatReceive);
 
                     viewHolder.msg = (TextView)convertView.findViewById(R.id.textViewChatMsgReceive);

@@ -8,6 +8,8 @@
     <item android:title="Book Appointments"
         android:id="@+id/menuItemBook"
         app:showAsAction="never"/>
+    <item android:title="Add As Favourite"
+        android:id="@+id/menuItemAddFav"/>
     <item android:title="Share"
         android:id="@+id/menuItemShare"
         app:showAsAction="never"

@@ -2,6 +2,7 @@ package com.whitebirdtechnology.medicalassistant.ExpertFragment.ByCategoriesFrag
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.whitebirdtechnology.medicalassistant.ExpertFragment.ByCategoriesFragment.ListBySpecializationAndName.BySpecialization.SubCategoryExpertList.MainActivitySortedListBySubCate;
 import com.whitebirdtechnology.medicalassistant.R;
 
 import java.util.ArrayList;
@@ -33,9 +35,17 @@ public class BySpecializationAdapter extends ArrayAdapter {
         convertView = inflater.inflate(R.layout.by_specialization_item, parent, false);
         TextView textViewName = (TextView)convertView.findViewById(R.id.textViewName);
         ImageView imageView = (ImageView)convertView.findViewById(R.id.imageViewProf);
-        FeedItemListBySpecialization feedItemListBySpecialization = (FeedItemListBySpecialization) getItem(position);
+        final FeedItemListBySpecialization feedItemListBySpecialization = (FeedItemListBySpecialization) getItem(position);
         textViewName.setText(feedItemListBySpecialization.getStringSubCatName());
-
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, MainActivitySortedListBySubCate.class);
+                intent.putExtra("CatId",feedItemListBySpecialization.getStringSubCatId());
+                intent.putExtra("CatName",feedItemListBySpecialization.getStringSubCatName());
+                activity.startActivity(intent);
+            }
+        });
         return convertView;
     }
 }

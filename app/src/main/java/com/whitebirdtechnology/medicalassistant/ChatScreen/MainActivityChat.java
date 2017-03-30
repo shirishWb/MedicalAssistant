@@ -22,12 +22,14 @@ import android.widget.TextView;
 import com.whitebirdtechnology.medicalassistant.ChatScreen.BookAppointmentPage.MainActivityBookAppointment;
 import com.whitebirdtechnology.medicalassistant.LaunchScreen.MainActivityLaunchScreen;
 import com.whitebirdtechnology.medicalassistant.R;
+import com.whitebirdtechnology.medicalassistant.Server.BackgroundTask;
 import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreference;
 
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class MainActivityChat extends AppCompatActivity implements View.OnClickListener {
     TextView textViewName,textViewOccupation,textViewIsTyping;
@@ -100,6 +102,12 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         if(v==imageButtonOption){
             PopupMenu popupMenu = new PopupMenu(this,v);
             popupMenu.getMenuInflater().inflate(R.menu.menu_option,popupMenu.getMenu());
+            MenuItem item = popupMenu.getMenu().findItem(R.id.menuItemAddFav);
+            if(aBooleanIsFavourite){
+                item.setTitle("Remove Favourite");
+            }else {
+                item.setTitle("Add Favourite");
+            }
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
@@ -108,6 +116,22 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                         Intent intent = new Intent(MainActivityChat.this, MainActivityBookAppointment.class);
                         intent.putExtra("BundleEx",bundle);
                     startActivity(intent);
+                    }else if(id==R.id.menuItemAddFav){
+                        if(aBooleanIsFavourite){
+                            HashMap<String,String> params = new HashMap<String, String>();
+                            params.put(getString(R.string.serviceKeyExpertId),stringExpertId);
+                            params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
+                            new BackgroundTask(MainActivityChat.this,params,getString(R.string.AddfavouriteURL)).execute();
+                            aBooleanIsFavourite =false;
+                            item.setTitle("Add Favourite");
+                        }else {
+                            HashMap<String,String> params = new HashMap<String, String>();
+                            params.put(getString(R.string.serviceKeyExpertId),stringExpertId);
+                            params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
+                            new BackgroundTask(MainActivityChat.this,params,getString(R.string.AddfavouriteURL)).execute();
+                            aBooleanIsFavourite =true;
+                            item.setTitle("Remove Favourite");
+                        }
                     }
                     return true;
                 }
@@ -127,7 +151,6 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                 String time = sdf.format(dt);
                 feedItemChat.setStringTime(time);
                 arrayListChat.add(feedItemChat);
-
                 chatAdapter.notifyDataSetChanged();
                //
             }

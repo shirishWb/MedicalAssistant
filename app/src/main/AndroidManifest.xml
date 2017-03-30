@@ -32,12 +32,14 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".SignUpScreen.MainActivityOTP"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".HomeScreen.MainActivityHomeScreen" />
         <activity android:name=".ExpertFragment.ByCategoriesFragment.ListBySpecializationAndName.MainActivitySortedListByCate" />
         <activity android:name=".ChatScreen.MainActivityChat" />
         <activity android:name=".ChatScreen.BookAppointmentPage.MainActivityBookAppointment" />
-        <activity android:name=".ChatScreen.BookAppointmentPage.AppointmentTime.MainActivitySetTime"></activity>
+        <activity android:name=".ChatScreen.BookAppointmentPage.AppointmentTime.MainActivitySetTime" />
+        <activity android:name=".ExpertFragment.ByCategoriesFragment.ListBySpecializationAndName.BySpecialization.SubCategoryExpertList.MainActivitySortedListBySubCate"></activity>
     </application>
 
 </manifest>

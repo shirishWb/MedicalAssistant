@@ -13,20 +13,23 @@
     android:id="@+id/menuItemMoreInfo"
     app:showAsAction="never"
     />
-    <item android:title="Book Appointments"
-        android:id="@+id/menuItemBook"
+    <item android:title="Account"
+        android:id="@+id/menuItemAccount"
         app:showAsAction="never"/>
-    <item android:title="Share"
-        android:id="@+id/menuItemShare"
+    <item android:title="Chats"
+        android:id="@+id/menuItemChats"
         app:showAsAction="never"
         />
     <item android:title="Notifications"
-        android:id="@+id/menuItemNotify"
+        android:id="@+id/menuItemNotification"
         app:showAsAction="never"/>
-    <item android:title="Help"
-        android:id="@+id/menuItemHelp"
+    <item android:title="Show All Favourite"
+        android:id="@+id/menuItemShowAllFav"
         app:showAsAction="never"
         />
+    <item android:title="Invite Expert"
+        android:id="@+id/menuItemInviteExpert"
+        app:showAsAction="never"/>
     <item android:title="Log Out"
         android:id="@+id/menuItemLogOut"
         app:showAsAction="never"/>

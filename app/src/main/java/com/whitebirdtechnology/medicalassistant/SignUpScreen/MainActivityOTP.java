@@ -119,9 +119,9 @@ public class MainActivityOTP extends AppCompatActivity implements View.OnClickLi
 
         return super.onOptionsItemSelected(item);
     }
-    @Override
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return super.onCreateOptionsMenu(menu);
-    }
+    }*/
 }

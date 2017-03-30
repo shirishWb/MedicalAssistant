@@ -45,4 +45,5 @@
     <string name="serviceKeyTimeArray">Time</string>
     <string name="serviceKeyTime">time</string>
     <string name="favouriteURL">favourite.php</string>
+    <string name="AddfavouriteURL">like</string>
 </resources>
