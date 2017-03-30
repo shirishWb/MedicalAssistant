@@ -49,7 +49,7 @@ public class FavouriteTab extends Fragment implements AbsListView.OnScrollListen
         HashMap<String,String> params = new HashMap<>();
         params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
         params.put(getString(R.string.serviceKeyItem), String.valueOf(item));
-        params.put(getString(R.string.serviceKeyCateId),"2");
+        params.put(getString(R.string.serviceKeyFlagCate),"2");
         new BackgroundTaskFragment(this,params,getString(R.string.favouriteURL)).execute();
         /*arrayList = new ArrayList<>();
         for(int i=0;i<5;i++) {
@@ -119,7 +119,7 @@ public class FavouriteTab extends Fragment implements AbsListView.OnScrollListen
             HashMap<String,String> params = new HashMap<>();
             params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
             params.put(getString(R.string.serviceKeyItem), String.valueOf(item));
-            params.put(getString(R.string.serviceKeyCateId),"2");
+            params.put(getString(R.string.serviceKeyFlagCate),"2");
             new BackgroundTaskFragment(this,params,getString(R.string.favouriteURL)).execute();
             loading =true;
         }

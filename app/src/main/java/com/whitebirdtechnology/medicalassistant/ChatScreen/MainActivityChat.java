@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.whitebirdtechnology.medicalassistant.ChatScreen.BookAppointmentPage.M
 import com.whitebirdtechnology.medicalassistant.LaunchScreen.MainActivityLaunchScreen;
 import com.whitebirdtechnology.medicalassistant.R;
 import com.whitebirdtechnology.medicalassistant.Server.BackgroundTask;
+import com.whitebirdtechnology.medicalassistant.Server.ServerResponse;
 import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreference;
 
 import java.sql.Time;
@@ -31,7 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-public class MainActivityChat extends AppCompatActivity implements View.OnClickListener {
+public class MainActivityChat extends AppCompatActivity implements View.OnClickListener,ServerResponse {
     TextView textViewName,textViewOccupation,textViewIsTyping;
     ImageView imageViewProf;
     ImageButton imageButtonCall,imageButtonAttach,imageButtonOption,imageButtonAdd,imageButtonSend;
@@ -121,14 +123,16 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                             HashMap<String,String> params = new HashMap<String, String>();
                             params.put(getString(R.string.serviceKeyExpertId),stringExpertId);
                             params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
-                            new BackgroundTask(MainActivityChat.this,params,getString(R.string.AddfavouriteURL)).execute();
+                            params.put(getString(R.string.serviceKeyFlagCate),"1");
+                            new BackgroundTask(MainActivityChat.this,params,getString(R.string.favouriteURL)).execute();
                             aBooleanIsFavourite =false;
                             item.setTitle("Add Favourite");
                         }else {
                             HashMap<String,String> params = new HashMap<String, String>();
                             params.put(getString(R.string.serviceKeyExpertId),stringExpertId);
                             params.put(getString(R.string.serviceKeyUID),clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
-                            new BackgroundTask(MainActivityChat.this,params,getString(R.string.AddfavouriteURL)).execute();
+                            params.put(getString(R.string.serviceKeyFlagCate),"1");
+                            new BackgroundTask(MainActivityChat.this,params,getString(R.string.favouriteURL)).execute();
                             aBooleanIsFavourite =true;
                             item.setTitle("Remove Favourite");
                         }
@@ -164,5 +168,10 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void Response(String result, String methodKey) {
+        Log.d("ResultIsLike",result);
     }
 }

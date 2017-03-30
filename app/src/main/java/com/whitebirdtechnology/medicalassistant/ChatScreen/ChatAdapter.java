@@ -37,6 +37,7 @@ public class ChatAdapter extends BaseAdapter {
     private static class ViewHolder {
         TextView msg,time;
         ImageView imageViewProf;
+        int position;
     }
 
     @Override
@@ -57,21 +58,24 @@ public class ChatAdapter extends BaseAdapter {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        FeedItemChat feedItemChat = objects.get(position);
+
+
 
             final ViewHolder viewHolder;
             if(convertView ==null){
                 viewHolder = new ViewHolder();
                 LayoutInflater inflater = (LayoutInflater) activity
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                viewHolder.position = position;
+                FeedItemChat feedItemChat = objects.get(viewHolder.position);
                 if(feedItemChat.getStringFlag().equals("1")) {
-                    convertView = inflater.inflate(R.layout.chat_item_send, null);
+                    convertView = inflater.inflate(R.layout.chat_item_send, parent,false);
                     viewHolder.imageViewProf = (ImageView)convertView.findViewById(R.id.imageViewProfChatSend);
 
                     viewHolder.msg = (TextView)convertView.findViewById(R.id.textViewChatMsg);
                     viewHolder.time = (TextView)convertView.findViewById(R.id.textViewChatTime);
                 }else {
-                    convertView = inflater.inflate(R.layout.chat_item_received, null);
+                    convertView = inflater.inflate(R.layout.chat_item_received, parent,false);
                     viewHolder.imageViewProf = (ImageView)convertView.findViewById(R.id.imageViewProfChatReceive);
 
                     viewHolder.msg = (TextView)convertView.findViewById(R.id.textViewChatMsgReceive);
