@@ -20,6 +20,12 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.whitebirdtechnology.medicalassistant.ChatScreen.BookAppointmentPage.MainActivityBookAppointment;
 import com.whitebirdtechnology.medicalassistant.LaunchScreen.MainActivityLaunchScreen;
 import com.whitebirdtechnology.medicalassistant.R;
@@ -32,6 +38,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivityChat extends AppCompatActivity implements View.OnClickListener,ServerResponse {
     TextView textViewName,textViewOccupation,textViewIsTyping;
@@ -68,6 +77,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         setContentView(R.layout.activity_main_chat);
+
         textViewIsTyping = (TextView)findViewById(R.id.textViewIsTyping);
         textViewName = (TextView)findViewById(R.id.textViewName);
         textViewOccupation = (TextView)findViewById(R.id.textViewOccupation);
@@ -97,6 +107,54 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         arrayListChat = new ArrayList<>();
         chatAdapter = new ChatAdapter(this,arrayListChat);
         listViewChat.setAdapter(chatAdapter);
+        Timer t = new Timer();
+//Set the schedule function and rate
+        t.scheduleAtFixedRate(new TimerTask() {
+
+                                  @Override
+                                  public void run() {
+                                      DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                                      DatabaseReference ref = database.child("ChatMsg");
+                                      int eid = Integer.parseInt(stringExpertId);
+                                      int uid = Integer.parseInt(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
+                                      String uniqueNo;
+                                      if(eid>uid){
+                                          uniqueNo = String.valueOf(uid)+String.valueOf(eid);
+                                      }else {
+                                          uniqueNo = String.valueOf(eid)+String.valueOf(uid);
+                                      }
+                                      Query phoneQuery = ref.child(uniqueNo);
+                                      phoneQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                          @Override
+                                          public void onDataChange(DataSnapshot dataSnapshot) {
+                                              arrayListChat = new ArrayList<FeedItemChat>();
+                                              for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                                                  FeedItemChat feedItemChat = new FeedItemChat();
+                                                  if(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)).equals(String.valueOf(singleSnapshot.child("uid").getValue()))) {
+                                                      feedItemChat.setStringFlag("1");
+                                                      feedItemChat.setStringImgPath(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)));
+                                                  }else {
+                                                      feedItemChat.setStringFlag("2");
+                                                      feedItemChat.setStringImgPath(stringImgProf);
+                                                  }
+                                                  feedItemChat.setStringMsg( String.valueOf(singleSnapshot.child("message").getValue()));
+                                                  feedItemChat.setStringTime( String.valueOf(singleSnapshot.child("time").getValue()));
+                                                  arrayListChat.add(feedItemChat);
+                                                  chatAdapter = new ChatAdapter(MainActivityChat.this,arrayListChat);
+                                                  listViewChat.setAdapter(chatAdapter);
+                                                  chatAdapter.notifyDataSetChanged();
+                                          //        DataSnapshot user = (DataSnapshot) singleSnapshot.getChildren();
+                                                  Log.e("message", String.valueOf(singleSnapshot.child("message").getValue()));
+                                              }
+                                          }
+                                          @Override
+                                          public void onCancelled(DatabaseError databaseError) {
+                                              Log.e("errorMsg", "onCancelled", databaseError.toException());
+                                          }
+                                      });
+                                  }
+
+                              },0,1000);
     }
 
     @Override
@@ -144,19 +202,32 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         }
         if(v==imageButtonSend){
             if(!editTextMsg.getText().toString().isEmpty()){
-                FeedItemChat feedItemChat = new FeedItemChat();
-                feedItemChat.setStringFlag("1");
-                //feedItemChat.setStringImgPath(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)));
-                feedItemChat.setStringMsg(editTextMsg.getText().toString());
-                feedItemChat.setStringImgPath(stringImgProf);
-                editTextMsg.setText("");
+
                 Date dt = new Date();
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("hh:mm aa");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm aa");
                 String time = sdf.format(dt);
-                feedItemChat.setStringTime(time);
-                arrayListChat.add(feedItemChat);
-                chatAdapter.notifyDataSetChanged();
-               //
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference ref = database.getReference("ChatMsg");
+                int eid = Integer.parseInt(stringExpertId);
+                int uid = Integer.parseInt(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
+                String uniqueNo;
+                if(eid>uid){
+                    uniqueNo = String.valueOf(uid)+String.valueOf(eid);
+                }else {
+                    uniqueNo = String.valueOf(eid)+String.valueOf(uid);
+                }
+                DatabaseReference usersRef = ref.child(uniqueNo);
+                DatabaseReference userMsg = usersRef.child(time);
+
+                Map<String, String> users = new HashMap<String, String>();
+
+                users.put("message", editTextMsg.getText().toString());
+                users.put("uid", String.valueOf(uid));
+                String time2 = sdf2.format(dt);
+                users.put("time",time2);
+                editTextMsg.setText("");
+                userMsg.setValue(users);
             }
         }
     }

@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "909022580178",
+    "firebase_url": "https://medical-assistance-fa14e.firebaseio.com",
+    "project_id": "medical-assistance-fa14e",
+    "storage_bucket": "medical-assistance-fa14e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:909022580178:android:a0e6d7402f5123c8",
+        "android_client_info": {
+          "package_name": "com.whitebirdtechnology.medicalassistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "909022580178-v0ujhtt0h9an2p36jcfkok2r0qbjm9be.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPwa27xcIOAYCdcZPRnOrQ1n9HhP4guyM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

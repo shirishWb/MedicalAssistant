@@ -27,47 +27,31 @@ import static java.security.AccessController.getContext;
  * Created by dell on 29/3/17.
  */
 
-public class ChatAdapter extends BaseAdapter {
-    ArrayList<FeedItemChat> objects;
+public class ChatAdapter extends ArrayAdapter {
     Activity activity;
     public ChatAdapter(@NonNull Activity activity, @NonNull ArrayList<FeedItemChat> objects) {
+        super(activity,0,objects);
         this.activity =activity;
-        this.objects = objects;
     }
     private static class ViewHolder {
         TextView msg,time;
         ImageView imageViewProf;
-        int position;
     }
 
-    @Override
-    public int getCount() {
-        return objects.size();
-    }
 
-    @Override
-    public Object getItem(int position) {
-        return objects.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
 
-
+        FeedItemChat feedItemChat = (FeedItemChat) getItem(position);
             final ViewHolder viewHolder;
             if(convertView ==null){
                 viewHolder = new ViewHolder();
                 LayoutInflater inflater = (LayoutInflater) activity
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                viewHolder.position = position;
-                FeedItemChat feedItemChat = objects.get(viewHolder.position);
+
                 if(feedItemChat.getStringFlag().equals("1")) {
                     convertView = inflater.inflate(R.layout.chat_item_send, parent,false);
                     viewHolder.imageViewProf = (ImageView)convertView.findViewById(R.id.imageViewProfChatSend);
@@ -81,23 +65,24 @@ public class ChatAdapter extends BaseAdapter {
                     viewHolder.msg = (TextView)convertView.findViewById(R.id.textViewChatMsgReceive);
                     viewHolder.time = (TextView)convertView.findViewById(R.id.textViewChatTimeReceive);
                 }
-                if (feedItemChat.getStringImgPath() != null) {
-                    final String stringImageURL = feedItemChat.getStringImgPath();
-                    if(!stringImageURL.isEmpty()) {
-                        byte[] decodedString = Base64.decode(feedItemChat.getStringImgPath(), Base64.DEFAULT);
-                        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                        viewHolder.imageViewProf.setImageBitmap(decodedByte);
-
-                    }
-                } else
-                    viewHolder.imageViewProf.setVisibility(View.GONE);
-                viewHolder.msg.setText(feedItemChat.getStringMsg());
-                viewHolder.time.setText(feedItemChat.getStringTime());
-
+                convertView.setTag(viewHolder);
 
             }else {
                viewHolder = (ViewHolder) convertView.getTag();
             }
+
+
+            final String stringImageURL = feedItemChat.getStringImgPath();
+            if(!stringImageURL.isEmpty()) {
+                byte[] decodedString = Base64.decode(feedItemChat.getStringImgPath(), Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                viewHolder.imageViewProf.setImageBitmap(decodedByte);
+
+            }
+
+        viewHolder.msg.setText(feedItemChat.getStringMsg());
+        viewHolder.time.setText(feedItemChat.getStringTime());
+
 
 
         return convertView;
