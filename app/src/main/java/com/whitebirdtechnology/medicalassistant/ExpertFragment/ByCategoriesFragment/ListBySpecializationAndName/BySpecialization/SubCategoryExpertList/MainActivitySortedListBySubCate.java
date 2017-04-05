@@ -2,6 +2,9 @@ package com.whitebirdtechnology.medicalassistant.ExpertFragment.ByCategoriesFrag
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -58,6 +61,12 @@ public class MainActivitySortedListBySubCate extends AppCompatActivity implement
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(getResources().getColor(R.color.light_blue_chat));
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.light_blue_chat));
+        }
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.light_blue_chat)));
         setContentView(R.layout.activity_main_sorted_list_by_sub_cate);
         Intent intent = getIntent();
         selCat = intent.getStringExtra("CatId");
@@ -102,6 +111,7 @@ public class MainActivitySortedListBySubCate extends AppCompatActivity implement
                     feedListByExpert.setStringSubCatagory(object1.getString(getString(R.string.serviceKeySubCateName)));
                     feedListByExpert.setStringSubCatId(object1.getString(getString(R.string.serviceKeySubCateId)));
                     feedListByExpert.setStringExpertId(object1.getString(getString(R.string.serviceKeyExpertId)));
+                    feedListByExpert.setStringMobNo(object1.getString(getString(R.string.serviceKeyMobileNo)));
                     if(object1.getString(getString(R.string.serviceKeyFav)).equals("1"))
                         feedListByExpert.setaBooleanFav(true);
                     else

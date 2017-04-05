@@ -87,7 +87,7 @@ public class FavouriteTab extends Fragment implements AbsListView.OnScrollListen
                     feedListByExpert.setStringSubCatagory(object1.getString(getString(R.string.serviceKeySubCateName)));
                     feedListByExpert.setStringSubCatId(object1.getString(getString(R.string.serviceKeySubCateId)));
                     feedListByExpert.setStringExpertId(object1.getString(getString(R.string.serviceKeyExpertId)));
-
+                    feedListByExpert.setStringMobNo(object1.getString(getString(R.string.serviceKeyMobileNo)));
                     if(!SingltonListByFav.getInstance().arrayListByExpert.contains(feedListByExpert))
                         SingltonListByFav.getInstance().arrayListByExpert.add(feedListByExpert);
                 }

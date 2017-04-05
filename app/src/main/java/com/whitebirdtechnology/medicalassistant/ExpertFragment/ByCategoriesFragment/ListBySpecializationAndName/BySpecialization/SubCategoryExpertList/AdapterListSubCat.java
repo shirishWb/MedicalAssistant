@@ -88,6 +88,7 @@ public class AdapterListSubCat extends ArrayAdapter{
                 bundle.putString("EImg",feedListByExpert.getStringImgPath());
                 bundle.putString("EId",feedListByExpert.getStringExpertId());
                 bundle.putBoolean("BoolFav",feedListByExpert.getaBooleanFav());
+                bundle.putString("EMobNo",feedListByExpert.getStringMobNo());
                 intent.putExtra("BundleExpert",bundle);
                 activity.startActivity(intent);
             }

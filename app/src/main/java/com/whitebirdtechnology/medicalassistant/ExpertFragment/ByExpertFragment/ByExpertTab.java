@@ -89,6 +89,7 @@ public class ByExpertTab extends Fragment implements ServerResponse,AbsListView.
                     feedListByExpert.setStringSubCatagory(object1.getString(getString(R.string.serviceKeySubCateName)));
                     feedListByExpert.setStringSubCatId(object1.getString(getString(R.string.serviceKeySubCateId)));
                      feedListByExpert.setStringExpertId(object1.getString(getString(R.string.serviceKeyExpertId)));
+                    feedListByExpert.setStringMobNo(object1.getString(getString(R.string.serviceKeyMobileNo)));
                    if(object1.getString(getString(R.string.serviceKeyFav)).equals("1"))
                         feedListByExpert.setaBooleanFav(true);
                        else

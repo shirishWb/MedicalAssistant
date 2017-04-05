@@ -2,6 +2,7 @@ package com.whitebirdtechnology.medicalassistant.ChatScreen;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.LayoutRes;
@@ -21,6 +22,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.whitebirdtechnology.medicalassistant.ChatScreen.FullScreenImageChat.MainActivityFullScreenImgChat;
 import com.whitebirdtechnology.medicalassistant.R;
 import com.whitebirdtechnology.medicalassistant.Server.ImageDownloaderTask;
 
@@ -119,10 +121,19 @@ public class ChatAdapter extends ArrayAdapter {
                 final long ONE_MEGABYTE = 800 * 800;
                 islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                     @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    public void onSuccess(final byte[] bytes) {
+                        final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 
                         viewHolder.imageViewProf.setImageBitmap(bitmap);
+
+                        viewHolder.imageViewProf.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(activity, MainActivityFullScreenImgChat.class);
+                                intent.putExtra("ImgByteArray",bytes);
+                                activity.startActivity(intent);
+                            }
+                        });
                         // Data for "images/island.jpg" is returns, use this as needed
                     }
                 }).addOnFailureListener(new OnFailureListener() {

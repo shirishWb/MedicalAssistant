@@ -5,7 +5,24 @@ package com.whitebirdtechnology.medicalassistant.ExpertFragment.ByCategoriesFrag
  */
 
 public class FeedListBySubCatExpert {
-    String stringExpertName, stringCategory,stringSubCatagory,stringCatId, stringSubCatId,stringLoc,stringImgPath,stringExpertId;
+    String stringExpertName;
+    String stringCategory;
+    String stringSubCatagory;
+    String stringCatId;
+    String stringSubCatId;
+    String stringLoc;
+    String stringImgPath;
+    String stringExpertId;
+
+    public String getStringMobNo() {
+        return stringMobNo;
+    }
+
+    public void setStringMobNo(String stringMobNo) {
+        this.stringMobNo = stringMobNo;
+    }
+
+    String stringMobNo;
     Boolean aBooleanFav;
 
     public String getStringExpertName() {

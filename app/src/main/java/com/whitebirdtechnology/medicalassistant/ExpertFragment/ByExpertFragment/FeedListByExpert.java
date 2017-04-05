@@ -5,8 +5,16 @@ package com.whitebirdtechnology.medicalassistant.ExpertFragment.ByExpertFragment
  */
 
 class FeedListByExpert {
-    String stringExpertName, stringCategory,stringSubCatagory,stringCatId, stringSubCatId,stringLoc,stringImgPath,stringExpertId;
+    String stringExpertName, stringCategory,stringSubCatagory,stringCatId, stringSubCatId,stringLoc,stringImgPath,stringExpertId,stringMobNo;
     Boolean aBooleanFav;
+
+    public String getStringMobNo() {
+        return stringMobNo;
+    }
+
+    public void setStringMobNo(String stringMobNo) {
+        this.stringMobNo = stringMobNo;
+    }
 
     public String getStringExpertId() {
         return stringExpertId;

@@ -1,6 +1,9 @@
 package com.whitebirdtechnology.medicalassistant.HomeScreen;
 
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,6 +35,13 @@ public class MainActivityHomeScreen extends AppCompatActivity implements TabLayo
         Title = (TextView) view.findViewById(R.id.actionbar_title);
         Title.setText("Home");
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(getResources().getColor(R.color.light_blue_chat));
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.light_blue_chat));
+
+        }
+
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.light_blue_chat)));
         getSupportActionBar().setCustomView(view,params);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME); //show custom title

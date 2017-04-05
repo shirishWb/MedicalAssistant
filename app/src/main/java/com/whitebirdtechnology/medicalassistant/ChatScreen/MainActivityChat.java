@@ -17,6 +17,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -78,7 +79,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
     ImageView imageViewProf;
     ImageButton imageButtonCall,imageButtonAttach,imageButtonOption,imageButtonAdd,imageButtonSend;
     Bundle bundle;
-    String stringName,stringOcupation,stringExpertId,stringImgProf;
+    String stringName,stringOcupation,stringExpertId,stringImgProf,stringExpertMobNo;
     Boolean aBooleanIsFavourite;
     ListView listViewChat;
     ActionBar.LayoutParams params;
@@ -88,7 +89,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
     EditText editTextMsg;
     ClsSharePreference clsSharePreference;
     int height,width;
-    int eid,uid;
+    long eid,uid;
     public static  DatabaseReference database ;
     String uniqueNo;
     @Override
@@ -106,6 +107,11 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         height = displayMetrics.heightPixels;
         width = displayMetrics.widthPixels;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(getResources().getColor(R.color.light_blue_chat));
+            getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.light_blue_chat));
+        }
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.light_blue_chat)));
         getSupportActionBar().setCustomView(view,params);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME); //show custom title
@@ -120,9 +126,9 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         stringImgProf = bundle.getString("EImg");
         stringExpertId = bundle.getString("EId");
         aBooleanIsFavourite = bundle.getBoolean("BoolFav");
-        eid = Integer.parseInt(stringExpertId);
-        uid = Integer.parseInt(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
-
+        stringExpertMobNo = bundle.getString("EMobNo");
+        eid = Long.parseLong(stringExpertMobNo);
+        uid = Long.parseLong(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
         if(eid>uid){
             uniqueNo = String.valueOf(uid)+String.valueOf(eid);
         }else {
@@ -157,15 +163,6 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                                   @Override
                                   public void run() {
 
-
-                                      /*if(database ==null) {
-                                          try {
-                                              FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
-                                          } catch (Exception e) {
-                                              Log.e("errorFire", e.getMessage());
-                                          }
-                                      }*/
                                       database = FirebaseDatabase.getInstance().getReference();
                                       DatabaseReference ref = database.child("ChatMsg");
                                       Query phoneQuery = ref.child(uniqueNo);
@@ -177,7 +174,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                                                   size++ ;
                                                   if(arrayListChat.size()<size){
                                                   FeedItemChat feedItemChat = new FeedItemChat();
-                                                  if(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)).equals(String.valueOf(singleSnapshot.child("uid").getValue()))) {
+                                                  if(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)).equals(String.valueOf(singleSnapshot.child("uid").getValue()))) {
                                                       feedItemChat.setStringFlag("1");
                                                       feedItemChat.setStringImgPath(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)));
                                                   }else {
@@ -262,7 +259,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                 DatabaseReference ref = database.getReference("ChatMsg");
 
                 DatabaseReference usersRef = ref.child(uniqueNo);
-                DatabaseReference userMsg = usersRef.child(time);
+                DatabaseReference userMsg = usersRef.child(time+","+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
 
                 Map<String, String> users = new HashMap<>();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -445,10 +442,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         final String time = sdf.format(dt);
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference mountainsRef = storageRef.child(time+".jpg");
         StorageReference mountainImagesRef = storageRef.child("images"+uniqueNo+"/"+time+".jpg");
-        mountainsRef.getName().equals(mountainImagesRef.getName());    // true
-        mountainsRef.getPath().equals(mountainImagesRef.getPath());
         UploadTask uploadTask = mountainImagesRef.putBytes(imageBytes);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -465,7 +459,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                 DatabaseReference ref = database.getReference("ChatMsg");
 
                 DatabaseReference usersRef = ref.child(uniqueNo);
-                DatabaseReference userMsg = usersRef.child(time);
+                DatabaseReference userMsg = usersRef.child(time+","+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
 
                 Map<String, String> users = new HashMap<>();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

@@ -86,6 +86,7 @@ public class ListAdapterByFavourite extends ArrayAdapter {
                 bundle.putString("EOccupation",feedListByExpert.getStringCategory()+","+feedListByExpert.getStringSubCatagory());
                 bundle.putString("EImg",feedListByExpert.getStringImgPath());
                 bundle.putString("EId",feedListByExpert.getStringExpertId());
+                bundle.putString("EMobNo",feedListByExpert.getStringMobNo());
                 intent.putExtra("BundleExpert",bundle);
                 activity.startActivity(intent);
             }
