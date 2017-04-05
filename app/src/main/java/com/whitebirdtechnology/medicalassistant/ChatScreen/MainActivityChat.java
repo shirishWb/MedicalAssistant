@@ -1,31 +1,55 @@
 package com.whitebirdtechnology.medicalassistant.ChatScreen;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.whitebirdtechnology.medicalassistant.ChatScreen.BookAppointmentPage.MainActivityBookAppointment;
 import com.whitebirdtechnology.medicalassistant.LaunchScreen.MainActivityLaunchScreen;
 import com.whitebirdtechnology.medicalassistant.R;
@@ -33,6 +57,10 @@ import com.whitebirdtechnology.medicalassistant.Server.BackgroundTask;
 import com.whitebirdtechnology.medicalassistant.Server.ServerResponse;
 import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreference;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,6 +70,9 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.R.attr.data;
+
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivityChat extends AppCompatActivity implements View.OnClickListener,ServerResponse {
     TextView textViewName,textViewOccupation,textViewIsTyping;
     ImageView imageViewProf;
@@ -56,6 +87,10 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
     ChatAdapter chatAdapter;
     EditText editTextMsg;
     ClsSharePreference clsSharePreference;
+    int height,width;
+    int eid,uid;
+    public static  DatabaseReference database ;
+    String uniqueNo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +102,10 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
 
         Title = (TextView) view.findViewById(R.id.actionbar_title);
         Title.setText("Book Appointment");
-
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        height = displayMetrics.heightPixels;
+        width = displayMetrics.widthPixels;
         getSupportActionBar().setCustomView(view,params);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME); //show custom title
@@ -77,7 +115,19 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         setContentView(R.layout.activity_main_chat);
+        clsSharePreference = new ClsSharePreference(this);
+        bundle = getIntent().getBundleExtra("BundleExpert");
+        stringImgProf = bundle.getString("EImg");
+        stringExpertId = bundle.getString("EId");
+        aBooleanIsFavourite = bundle.getBoolean("BoolFav");
+        eid = Integer.parseInt(stringExpertId);
+        uid = Integer.parseInt(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
 
+        if(eid>uid){
+            uniqueNo = String.valueOf(uid)+String.valueOf(eid);
+        }else {
+            uniqueNo = String.valueOf(eid)+String.valueOf(uid);
+        }
         textViewIsTyping = (TextView)findViewById(R.id.textViewIsTyping);
         textViewName = (TextView)findViewById(R.id.textViewName);
         textViewOccupation = (TextView)findViewById(R.id.textViewOccupation);
@@ -94,41 +144,38 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         imageButtonAdd.setOnClickListener(this);
         imageButtonCall.setOnClickListener(this);
         imageButtonSend.setOnClickListener(this);
-        clsSharePreference = new ClsSharePreference(this);
-        bundle = getIntent().getBundleExtra("BundleExpert");
         textViewName.setText(bundle.getString("EName"));
         textViewOccupation.setText(bundle.getString("EOccupation"));
         byte[] decodedString = Base64.decode(bundle.getString("EImg"), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imageViewProf.setImageBitmap(decodedByte);
-        stringImgProf = bundle.getString("EImg");
-        stringExpertId = bundle.getString("EId");
-        aBooleanIsFavourite = bundle.getBoolean("BoolFav");
         arrayListChat = new ArrayList<>();
-        chatAdapter = new ChatAdapter(this,arrayListChat);
-        listViewChat.setAdapter(chatAdapter);
         Timer t = new Timer();
 //Set the schedule function and rate
         t.scheduleAtFixedRate(new TimerTask() {
 
                                   @Override
                                   public void run() {
-                                      DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+
+                                      /*if(database ==null) {
+                                          try {
+                                              FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+                                          } catch (Exception e) {
+                                              Log.e("errorFire", e.getMessage());
+                                          }
+                                      }*/
+                                      database = FirebaseDatabase.getInstance().getReference();
                                       DatabaseReference ref = database.child("ChatMsg");
-                                      int eid = Integer.parseInt(stringExpertId);
-                                      int uid = Integer.parseInt(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
-                                      String uniqueNo;
-                                      if(eid>uid){
-                                          uniqueNo = String.valueOf(uid)+String.valueOf(eid);
-                                      }else {
-                                          uniqueNo = String.valueOf(eid)+String.valueOf(uid);
-                                      }
                                       Query phoneQuery = ref.child(uniqueNo);
                                       phoneQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                                           @Override
                                           public void onDataChange(DataSnapshot dataSnapshot) {
-                                              arrayListChat = new ArrayList<FeedItemChat>();
+                                              int size = 0;
                                               for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                                                  size++ ;
+                                                  if(arrayListChat.size()<size){
                                                   FeedItemChat feedItemChat = new FeedItemChat();
                                                   if(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)).equals(String.valueOf(singleSnapshot.child("uid").getValue()))) {
                                                       feedItemChat.setStringFlag("1");
@@ -139,12 +186,15 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                                                   }
                                                   feedItemChat.setStringMsg( String.valueOf(singleSnapshot.child("message").getValue()));
                                                   feedItemChat.setStringTime( String.valueOf(singleSnapshot.child("time").getValue()));
+                                                      feedItemChat.setStringType(String.valueOf(singleSnapshot.child("type").getValue()));
                                                   arrayListChat.add(feedItemChat);
                                                   chatAdapter = new ChatAdapter(MainActivityChat.this,arrayListChat);
                                                   listViewChat.setAdapter(chatAdapter);
                                                   chatAdapter.notifyDataSetChanged();
-                                          //        DataSnapshot user = (DataSnapshot) singleSnapshot.getChildren();
+/*
                                                   Log.e("message", String.valueOf(singleSnapshot.child("message").getValue()));
+*/
+                                                  }
                                               }
                                           }
                                           @Override
@@ -157,6 +207,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                               },0,1000);
     }
 
+    @SuppressLint("RtlHardcoded")
     @Override
     public void onClick(View v) {
         if(v==imageButtonOption){
@@ -204,32 +255,99 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
             if(!editTextMsg.getText().toString().isEmpty()){
 
                 Date dt = new Date();
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss aa");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aa");
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm aa");
                 String time = sdf.format(dt);
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference("ChatMsg");
-                int eid = Integer.parseInt(stringExpertId);
-                int uid = Integer.parseInt(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
-                String uniqueNo;
-                if(eid>uid){
-                    uniqueNo = String.valueOf(uid)+String.valueOf(eid);
-                }else {
-                    uniqueNo = String.valueOf(eid)+String.valueOf(uid);
-                }
+
                 DatabaseReference usersRef = ref.child(uniqueNo);
                 DatabaseReference userMsg = usersRef.child(time);
 
-                Map<String, String> users = new HashMap<String, String>();
-
+                Map<String, String> users = new HashMap<>();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    listViewChat.scrollListBy(arrayListChat.size()-1);
+                }
                 users.put("message", editTextMsg.getText().toString());
                 users.put("uid", String.valueOf(uid));
                 String time2 = sdf2.format(dt);
                 users.put("time",time2);
+                users.put("type","1");
                 editTextMsg.setText("");
                 userMsg.setValue(users);
             }
         }
+        if(v==imageButtonAttach){
+            LayoutInflater layoutInflater = getLayoutInflater();
+            View viewPop = layoutInflater.inflate(R.layout.attach_layout,null);
+            Rect location = locateView(imageButtonAttach);
+            final PopupWindow popupWindow = new PopupWindow(viewPop);
+            popupWindow.setOutsideTouchable(true);
+            popupWindow.setFocusable(true);
+            // Removes default background.
+            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            if (location != null) {
+                popupWindow.showAtLocation(imageButtonAttach,Gravity.CENTER|Gravity.TOP,0,location.bottom);
+            }
+            if (location != null) {
+                popupWindow.update(0,location.bottom,width,(int)(height*0.3));
+            }
+            ImageButton imageButtonCamera = (ImageButton)viewPop.findViewById(R.id.imageButtonCamera);
+            ImageButton imageButtonGallery = (ImageButton)viewPop.findViewById(R.id.imageButtonGallery);
+            imageButtonCamera.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                    String path = Environment.getExternalStorageDirectory()+ "/Images";
+
+                    File imgFile = new File(path);
+                    if (!imgFile.exists()) {
+                        File wallpaperDirectory = new File("/sdcard/Images/");
+                        wallpaperDirectory.mkdirs();
+                    }
+                    File file = new File(new File("/sdcard/Images/"), "one.jpg");
+                    Uri uri = Uri.fromFile(file);
+                    try {
+                        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                        takePicture.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                        startActivityForResult(takePicture, 0);
+                    }catch (Exception e){
+                        Toast.makeText(MainActivityChat.this,"Please Check Permission",Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            });
+            imageButtonGallery.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    popupWindow.dismiss();
+                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    startActivityForResult(pickPhoto, 1);
+                }
+            });
+
+        }
+    }
+    public static Rect locateView(View v)
+    {
+        int[] loc_int = new int[2];
+        if (v == null) return null;
+        try
+        {
+            v.getLocationOnScreen(loc_int);
+        } catch (NullPointerException npe)
+        {
+            //Happens when the view doesn't exist on screen anymore.
+            return null;
+        }
+        Rect location = new Rect();
+        location.left = loc_int[0];
+        location.top = loc_int[1];
+        location.right = location.left + v.getWidth();
+        location.bottom = location.top + v.getHeight();
+        return location;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -244,5 +362,130 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
     @Override
     public void Response(String result, String methodKey) {
         Log.d("ResultIsLike",result);
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case 0:
+                if(resultCode == RESULT_OK){
+                   // Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    String path = Environment.getExternalStorageDirectory()+ "/Images";
+
+                    File imgFile = new File(path);
+                    if (!imgFile.exists()) {
+                        File wallpaperDirectory = new File("/sdcard/Images/");
+                        wallpaperDirectory.mkdirs();
+                    }
+                    File file = new File(new File("/sdcard/Images/"), "one.jpg");
+                    Uri uri = Uri.fromFile(file);
+
+                    //Convert uri to bitmap and reduce its size
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        verifyStoragePermissions(this);
+                        break;
+                    }
+                    //scale bitmap to the required size of imageview
+                    //this way it memory usage will also be less
+                    //set resized bitmap to imageview
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 750, 700, false);
+                    SendImgTo(bitmap);
+
+                }
+
+                break;
+            case 1:
+                if(resultCode == RESULT_OK){
+                    Uri selectedImage = data.getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImage);
+                        SendImgTo(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                break;
+
+
+        }
+    }
+    // Storage Permissions variables
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    //persmission method.
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have read or write permission
+        int writePermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int readPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (writePermission != PackageManager.PERMISSION_GRANTED || readPermission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
+    public void SendImgTo(Bitmap bmp){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        final Date dt = new Date();
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aa");
+        @SuppressLint("SimpleDateFormat") final SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm aa");
+        final String time = sdf.format(dt);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference mountainsRef = storageRef.child(time+".jpg");
+        StorageReference mountainImagesRef = storageRef.child("images"+uniqueNo+"/"+time+".jpg");
+        mountainsRef.getName().equals(mountainImagesRef.getName());    // true
+        mountainsRef.getPath().equals(mountainImagesRef.getPath());
+        UploadTask uploadTask = mountainImagesRef.putBytes(imageBytes);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("image upload",exception.getMessage());
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference ref = database.getReference("ChatMsg");
+
+                DatabaseReference usersRef = ref.child(uniqueNo);
+                DatabaseReference userMsg = usersRef.child(time);
+
+                Map<String, String> users = new HashMap<>();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    listViewChat.scrollListBy(arrayListChat.size()-1);
+                }
+                users.put("message","images"+uniqueNo+"/"+time+".jpg");
+                users.put("uid", String.valueOf(uid));
+                String time2 = sdf2.format(dt);
+                users.put("time",time2);
+                users.put("type","2");
+                userMsg.setValue(users);
+            }
+        });
+
+    }
+    public String getStringImage(Bitmap bmp){
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        return encodedImage;
     }
 }

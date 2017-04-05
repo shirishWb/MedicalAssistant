@@ -44,7 +44,7 @@ public class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         try {
 
 
-        final String stringUrl = activity.getString(R.string.serverURL)+stringImageUrl;
+       // final String stringUrl = activity.getString(R.string.serverURL)+stringImageUrl;
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(activity)
                 // You can pass your own memory cache implementation
                 .discCache(new UnlimitedDiskCache(pictureFile)) // You can pass your own disc cache implementation
@@ -59,7 +59,7 @@ public class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ImageLoader.getInstance().displayImage(stringUrl, imageView, options); // Incoming options will be used
+                ImageLoader.getInstance().displayImage(stringImageUrl, imageView, options); // Incoming options will be used
             }
         });
 

@@ -21,6 +21,8 @@
             android:scaleType="fitXY"
             android:src="@drawable/expert_icon_big"/>
     </android.support.v7.widget.CardView>
+
+
     <android.support.v7.widget.CardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -36,16 +38,15 @@
         android:layout_marginTop="26dp"
         app:layout_constraintHorizontal_bias="0.0">
         <RelativeLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
+            android:layout_margin="10dp"
             android:background="@color/chat_receiver_view">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:id="@+id/textViewChatMsgReceive"/>
 
             <TextView
@@ -59,6 +60,4 @@
                 android:id="@+id/textViewChatTimeReceive"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
-
-
 </android.support.constraint.ConstraintLayout>

@@ -5,7 +5,20 @@ package com.whitebirdtechnology.medicalassistant.ChatScreen;
  */
 
 public class FeedItemChat {
-    String stringMsg,stringFlag,stringTime,stringImgPath;
+    String stringMsg;
+    String stringFlag;
+    String stringTime;
+    String stringImgPath;
+
+    public String getStringType() {
+        return stringType;
+    }
+
+    public void setStringType(String stringType) {
+        this.stringType = stringType;
+    }
+
+    String stringType;
 
     public String getStringMsg() {
         return stringMsg;

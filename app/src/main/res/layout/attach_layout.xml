@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:id="@+id/linearLayoutAttach"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:id="@+id/cardViewAttach"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:elevation="10dp">
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+<ImageButton
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/camera"
+    android:background="@color/transparent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    android:id="@+id/imageButtonCamera"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Camera"
+            app:layout_constraintTop_toBottomOf="@id/imageButtonCamera"
+            app:layout_constraintLeft_toLeftOf="@+id/imageButtonCamera"
+            app:layout_constraintRight_toRightOf="@+id/imageButtonCamera"
+            android:layout_marginTop="5dp"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/gallery"
+                android:layout_marginLeft="15dp"
+                android:background="@color/transparent"
+                app:layout_constraintLeft_toRightOf="@+id/imageButtonCamera"
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/imageButtonGallery"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gallery"
+                app:layout_constraintTop_toBottomOf="@id/imageButtonGallery"
+                app:layout_constraintLeft_toLeftOf="@+id/imageButtonGallery"
+                app:layout_constraintRight_toRightOf="@+id/imageButtonGallery"
+                android:layout_marginTop="5dp"/>
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
