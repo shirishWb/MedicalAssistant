@@ -19,6 +19,7 @@ import com.whitebirdtechnology.medicalassistant.R;
 import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -64,12 +65,35 @@ public class ChatTab extends Fragment {
                                     query1.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-                                            FeedItemChatHistory feedItemChatHistory = new FeedItemChatHistory();
+                                            final FeedItemChatHistory feedItemChatHistory = new FeedItemChatHistory();
+                                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                                            DatabaseReference reference = databaseReference.child("UserInfo");
+                                            DatabaseReference reference1 = reference.child(stringAnotherId);
+                                            reference1.addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    feedItemChatHistory.setStringSenderName(dataSnapshot.child("Name").getValue().toString());
+                                                    feedItemChatHistory.setStringSenderOccu(dataSnapshot.child("Occupation").getValue().toString());
+                                                    String isFav =dataSnapshot.child("IsFavourite").getValue().toString();
+                                                    if(isFav.equals("true")){
+                                                        feedItemChatHistory.setaBooleanIsFav(true);
+                                                    }else
+                                                        feedItemChatHistory.setaBooleanIsFav(false);
 
+                                                    feedItemChatHistory.setStringSenderId(dataSnapshot.child("UserId").getValue().toString());
+                                                    feedItemChatHistory.setStringSenderImgPath(dataSnapshot.child("ProfilePath").getValue().toString());
+                                                    feedItemChatHistory.setStringMobNo(stringAnotherId);
+                                                }
+
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
+
+                                                }
+                                            });
                                             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                                 String stringLastKey = snapshot.getKey();
                                                 feedItemChatHistory.setStringLastKey(stringLastKey);
-                                                if (stringUserId.equals(String.valueOf(snapshot.child("uid").getValue()))) {
+                                                if (stringUserId.equals(String.valueOf(snapshot.child("mobileNo").getValue()))) {
                                                     feedItemChatHistory.setStringFlag("1");
                                                 } else {
                                                     feedItemChatHistory.setStringFlag("2");

@@ -11,6 +11,64 @@ public class FeedItemChatHistory {
     String stringFlag;
     String stringLastKey;
     String stringType;
+    String stringSenderName;
+    String stringSenderOccu;
+    String stringSenderId;
+    String stringSenderImgPath;
+
+    public String getStringMobNo() {
+        return stringMobNo;
+    }
+
+    public void setStringMobNo(String stringMobNo) {
+        this.stringMobNo = stringMobNo;
+    }
+
+    String stringMobNo;
+    Boolean aBooleanIsFav;
+
+    public Boolean getaBooleanIsFav() {
+        return aBooleanIsFav;
+    }
+
+    public void setaBooleanIsFav(Boolean aBooleanIsFav) {
+        this.aBooleanIsFav = aBooleanIsFav;
+    }
+
+    public String getStringSenderName() {
+        return stringSenderName;
+    }
+
+    public void setStringSenderName(String stringSenderName) {
+        this.stringSenderName = stringSenderName;
+    }
+
+    public String getStringSenderOccu() {
+        return stringSenderOccu;
+    }
+
+    public void setStringSenderOccu(String stringSenderOccu) {
+        this.stringSenderOccu = stringSenderOccu;
+    }
+
+
+    public String getStringSenderImgPath() {
+
+        return stringSenderImgPath;
+    }
+
+    public void setStringSenderImgPath(String stringSenderImgPath) {
+        this.stringSenderImgPath = stringSenderImgPath;
+    }
+
+    public String getStringSenderId() {
+
+        return stringSenderId;
+    }
+
+    public void setStringSenderId(String stringSenderId) {
+        this.stringSenderId = stringSenderId;
+    }
 
     public String getStringType() {
         return stringType;

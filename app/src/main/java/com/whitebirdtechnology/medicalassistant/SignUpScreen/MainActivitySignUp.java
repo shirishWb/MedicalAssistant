@@ -46,9 +46,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivitySignUp extends AppCompatActivity implements View.OnClickListener, ServerResponse, AdapterView.OnItemSelectedListener {
-    EditText editTextName,editTextEmail,editTextPassword,editTextConfirmPass,editTextMobNo;
+    EditText editTextName,editTextEmail,editTextPassword,editTextMobNo;
     TextView textViewSignup;
-    String stringEmail,stringPassword,stringConfirmPassword,stringMobileNo,stringName,stringURI,stringImg,stringCate,stringSubCate;
+    String stringEmail,stringPassword,stringMobileNo,stringName,stringURI,stringImg,stringCate,stringSubCate;
     ImageView imageViewProfile;
     Spinner spinnerCategorie,spinnerSubCategories;
     HashMap<String,String> hashMapCate,hashMapSubCate;
@@ -82,7 +82,6 @@ public class MainActivitySignUp extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_main_sign_up);
         clsSharePreference = new ClsSharePreference(this);
         imageViewProfile = (ImageView)findViewById(R.id.imageViewProf);
-        editTextConfirmPass = (EditText)findViewById(R.id.editTextConfirmPassword);
         editTextEmail= (EditText)findViewById(R.id.editTextEmail);
         editTextMobNo= (EditText)findViewById(R.id.editTextMobNo);
         editTextName= (EditText)findViewById(R.id.editTextName);
@@ -122,16 +121,14 @@ public class MainActivitySignUp extends AppCompatActivity implements View.OnClic
     boolean isPasswordMatches(){
         boolean match =false;
         stringPassword =editTextPassword.getText().toString();
-        stringConfirmPassword =editTextConfirmPass.getText().toString();
 
-        if(stringPassword.equals(stringConfirmPassword)){
+
             if (stringPassword.length()>=4){
                 match =true;
             }else {
                 Toast.makeText(this,"Enter Password at least 4 character",Toast.LENGTH_SHORT).show();
             }
-        }else
-            Toast.makeText(this,"Password not Matched",Toast.LENGTH_SHORT).show();
+
         if(stringPassword.isEmpty()){
             Toast.makeText(this,"Enter Password ",Toast.LENGTH_SHORT).show();
             match =false;

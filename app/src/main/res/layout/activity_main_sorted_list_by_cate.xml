@@ -5,16 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/lightGray"
     tools:context="com.whitebirdtechnology.medicalassistant.ExpertFragment.ByCategoriesFragment.ListBySpecializationAndName.MainActivitySortedListByCate">
     <android.support.design.widget.TabLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:id="@+id/tabLayoutSortCate"
         app:tabTextColor="@color/gray"
+        app:tabBackground="@color/white"
+        android:background="@color/lightGray"
+        android:layout_marginBottom="4dp"
         app:tabSelectedTextColor="@color/blue_button"
         app:tabIndicatorHeight="0dp" />
     <android.support.v4.view.ViewPager
         android:layout_width="match_parent"
+        android:background="@color/white"
         android:layout_height="match_parent"
         android:id="@+id/viewPagerSortCate"/>
 </LinearLayout>

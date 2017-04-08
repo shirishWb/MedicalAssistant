@@ -9,10 +9,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ClearCacheRequest;
+import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.whitebirdtechnology.medicalassistant.R;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +32,8 @@ public class VolleyServerClass {
     Fragment fragment;
     public VolleyServerClass(Activity activity){
         this.activity = activity;
+        if(this.activity==null)
+            return;
         progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage("Loading...");
         progressDialog.setCancelable(false);
@@ -38,14 +43,18 @@ public class VolleyServerClass {
                 progressDialog.show();
             }
         });
-        requestQueue = Volley.newRequestQueue(activity);
+        if (requestQueue == null)
+            requestQueue = Volley.newRequestQueue(activity);
         stringURL = activity.getString(R.string.serverURL);
 
     }
     public VolleyServerClass(Fragment fragment){
         activity = fragment.getActivity();
+        if(activity==null)
+            return;
         this.fragment = fragment;
-        requestQueue = Volley.newRequestQueue(fragment.getActivity());
+        if (requestQueue == null)
+            requestQueue = Volley.newRequestQueue(fragment.getActivity());
         stringURL = fragment.getActivity().getString(R.string.serverURL);
 
     }
@@ -57,7 +66,10 @@ public class VolleyServerClass {
                 ServerResponse serverResponse = null;
                 serverResponse = (ServerResponse) fragment;
                 serverResponse.Response(response,method_name);
-              //  DissmissDialog(activity);
+                requestQueue.getCache().clear();
+                params.clear();
+                new DiskBasedCache(activity.getCacheDir()).clear();
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -80,6 +92,9 @@ public class VolleyServerClass {
                 ServerResponse serverResponse = null;
                 serverResponse = (ServerResponse) activity;
                 serverResponse.Response(response,METHOD_NAME);
+                requestQueue.getCache().clear();
+                params.clear();
+                new DiskBasedCache(activity.getCacheDir()).clear();
                 DissmissDialog(activity);
             }
         }, new Response.ErrorListener() {

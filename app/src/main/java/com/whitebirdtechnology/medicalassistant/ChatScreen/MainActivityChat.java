@@ -21,7 +21,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -30,11 +29,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -52,7 +49,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.whitebirdtechnology.medicalassistant.ChatScreen.BookAppointmentPage.MainActivityBookAppointment;
-import com.whitebirdtechnology.medicalassistant.LaunchScreen.MainActivityLaunchScreen;
 import com.whitebirdtechnology.medicalassistant.R;
 import com.whitebirdtechnology.medicalassistant.Server.BackgroundTask;
 import com.whitebirdtechnology.medicalassistant.Server.ServerResponse;
@@ -61,8 +57,6 @@ import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreferen
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -70,8 +64,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import static android.R.attr.data;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivityChat extends AppCompatActivity implements View.OnClickListener,ServerResponse {
@@ -89,7 +81,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
     EditText editTextMsg;
     ClsSharePreference clsSharePreference;
     int height,width;
-    long eid,uid;
+    long expertMobNo, userMobNo;
     public static  DatabaseReference database ;
     String uniqueNo;
     @Override
@@ -127,12 +119,13 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         stringExpertId = bundle.getString("EId");
         aBooleanIsFavourite = bundle.getBoolean("BoolFav");
         stringExpertMobNo = bundle.getString("EMobNo");
-        eid = Long.parseLong(stringExpertMobNo);
-        uid = Long.parseLong(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
-        if(eid>uid){
-            uniqueNo = String.valueOf(uid)+String.valueOf(eid);
+        expertMobNo = Long.parseLong(stringExpertMobNo);
+        userMobNo = Long.parseLong(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
+
+        if(expertMobNo > userMobNo){
+            uniqueNo = String.valueOf(userMobNo)+String.valueOf(expertMobNo);
         }else {
-            uniqueNo = String.valueOf(eid)+String.valueOf(uid);
+            uniqueNo = String.valueOf(expertMobNo)+String.valueOf(userMobNo);
         }
         textViewIsTyping = (TextView)findViewById(R.id.textViewIsTyping);
         textViewName = (TextView)findViewById(R.id.textViewName);
@@ -155,6 +148,62 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         byte[] decodedString = Base64.decode(bundle.getString("EImg"), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imageViewProf.setImageBitmap(decodedByte);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference mountainImagesRef = storageRef.child("ProfileImages/"+"UserId"+expertMobNo+"/"+"Profile.jpg");
+        UploadTask uploadTask = mountainImagesRef.putBytes(decodedString);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("image upload",exception.getMessage());
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+//                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                DatabaseReference database1 = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference refInfo = database1.child("UserInfo");
+                DatabaseReference userId = refInfo.child(stringExpertMobNo);
+                HashMap<String,String> exrpertInfo = new HashMap<>();
+                exrpertInfo.put("Name",bundle.getString("EName"));
+                exrpertInfo.put("Occupation",bundle.getString("EOccupation"));
+                exrpertInfo.put("IsFavourite", String.valueOf(aBooleanIsFavourite));
+                exrpertInfo.put("UserId",stringExpertId);
+                exrpertInfo.put("ProfilePath","ProfileImages/"+"UserId"+expertMobNo+"/"+"Profile.jpg");
+                userId.setValue(exrpertInfo);
+            }
+        });
+
+        byte[] decodedStringUser = Base64.decode(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)), Base64.DEFAULT);
+        StorageReference mountainImagesRefUser = storageRef.child("ProfileImages/"+"UserId"+userMobNo+"/"+"Profile.jpg");
+        UploadTask uploadTaskUser = mountainImagesRefUser.putBytes(decodedStringUser);
+        uploadTaskUser.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.e("image upload",exception.getMessage());
+                // Handle unsuccessful uploads
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+//                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                DatabaseReference database1 = FirebaseDatabase.getInstance().getReference();
+                DatabaseReference refInfo = database1.child("UserInfo");
+                DatabaseReference userId = refInfo.child(String.valueOf(userMobNo));
+                HashMap<String,String> exrpertInfo = new HashMap<>();
+                exrpertInfo.put("Name",clsSharePreference.GetSharPrf(getString(R.string.SharPrfName)));
+                exrpertInfo.put("Occupation","");
+                exrpertInfo.put("IsFavourite", String.valueOf(false));
+                exrpertInfo.put("UserId",clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
+                exrpertInfo.put("ProfilePath","ProfileImages/"+"UserId"+userMobNo+"/"+"Profile.jpg");
+                userId.setValue(exrpertInfo);
+            }
+        });
+
+
         arrayListChat = new ArrayList<>();
         Timer t = new Timer();
 //Set the schedule function and rate
@@ -174,7 +223,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                                                   size++ ;
                                                   if(arrayListChat.size()<size){
                                                   FeedItemChat feedItemChat = new FeedItemChat();
-                                                  if(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)).equals(String.valueOf(singleSnapshot.child("uid").getValue()))) {
+                                                  if(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)).equals(String.valueOf(singleSnapshot.child("userMobNo").getValue()))) {
                                                       feedItemChat.setStringFlag("1");
                                                       feedItemChat.setStringImgPath(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)));
                                                   }else {
@@ -266,7 +315,9 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                     listViewChat.scrollListBy(arrayListChat.size()-1);
                 }
                 users.put("message", editTextMsg.getText().toString());
-                users.put("uid", String.valueOf(uid));
+                users.put("mobileNo", String.valueOf(userMobNo));
+                users.put("readValue","0");
+                users.put("userMobNo",clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
                 String time2 = sdf2.format(dt);
                 users.put("time",time2);
                 users.put("type","1");
@@ -442,7 +493,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         final String time = sdf.format(dt);
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
-        StorageReference mountainImagesRef = storageRef.child("images"+uniqueNo+"/"+time+".jpg");
+        StorageReference mountainImagesRef = storageRef.child("ChatImages/"+"UniqueId"+uniqueNo+"/"+time+".jpg");
         UploadTask uploadTask = mountainImagesRef.putBytes(imageBytes);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
@@ -454,10 +505,9 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+//                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference("ChatMsg");
-
                 DatabaseReference usersRef = ref.child(uniqueNo);
                 DatabaseReference userMsg = usersRef.child(time+","+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
 
@@ -465,8 +515,8 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     listViewChat.scrollListBy(arrayListChat.size()-1);
                 }
-                users.put("message","images"+uniqueNo+"/"+time+".jpg");
-                users.put("uid", String.valueOf(uid));
+                users.put("message","ChatImages/"+"UniqueId"+uniqueNo+"/"+time+".jpg");
+                users.put("userMobNo",clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
                 String time2 = sdf2.format(dt);
                 users.put("time",time2);
                 users.put("type","2");

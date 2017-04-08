@@ -4,10 +4,15 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.whitebirdtechnology.medicalassistant.R;
 
@@ -23,7 +28,11 @@ public class ExpertTab extends Fragment implements TabLayout.OnTabSelectedListen
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_expert_tab,container,false);
+        if(!isAdded()){
+            return view;
+        }
         tabLayout = (TabLayout)view.findViewById(R.id.tabLayout);
         viewPager = (ViewPager)view.findViewById(R.id.viewPagerExpert);
 

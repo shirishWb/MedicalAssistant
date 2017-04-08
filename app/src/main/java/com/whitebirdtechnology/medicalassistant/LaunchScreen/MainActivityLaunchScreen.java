@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import com.whitebirdtechnology.medicalassistant.HomeScreen.MainActivityHomeScreen;
 import com.whitebirdtechnology.medicalassistant.LogInScreen.MainActivityLogInScreen;
 import com.whitebirdtechnology.medicalassistant.R;
 import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreference;
@@ -40,14 +41,29 @@ public class MainActivityLaunchScreen extends AppCompatActivity implements View.
             );
         }
     }
+    private void CheckIfLogin(){
+        String uid = clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID));
+        if(uid != null&&!uid.equals("0")&&!uid.isEmpty()){
+            this.startActivity(new Intent(this, MainActivityHomeScreen.class));
+            this.finish();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        clsSharePreference = new ClsSharePreference(this);
+        CheckIfLogin();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main_launch_screen);
-        clsSharePreference = new ClsSharePreference(this);
         textViewExpertLogin = (TextView)findViewById(R.id.textViewExpertLogin);
         textViewUserLogin =(TextView)findViewById(R.id.textViewUserLogin);
+
         textViewExpertLogin.setOnClickListener(this);
         textViewUserLogin.setOnClickListener(this);
         verifyStoragePermissions(this);

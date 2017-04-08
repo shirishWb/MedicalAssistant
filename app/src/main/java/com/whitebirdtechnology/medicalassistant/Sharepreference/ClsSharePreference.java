@@ -21,4 +21,9 @@ public class ClsSharePreference {
     public String GetSharPrf(String key){
        return sharedPreferences.getString(key,"");
     }
+    public void ClearSharPrf(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+    }
 }

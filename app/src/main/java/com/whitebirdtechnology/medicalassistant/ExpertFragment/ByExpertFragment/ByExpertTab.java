@@ -2,11 +2,17 @@ package com.whitebirdtechnology.medicalassistant.ExpertFragment.ByExpertFragment
 
 
 import android.annotation.SuppressLint;
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -40,6 +46,7 @@ public class ByExpertTab extends Fragment implements ServerResponse,AbsListView.
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.by_expert_tab,container,false);
+        setHasOptionsMenu(true);
         listViewExpert = (ListView)view.findViewById(R.id.listViewExpert);
         clsSharePreference = new ClsSharePreference(getActivity());
         SingListByExpert.getInstance().arrayListByExpert.clear();
@@ -129,5 +136,46 @@ public class ByExpertTab extends Fragment implements ServerResponse,AbsListView.
             new BackgroundTaskFragment(this,params,getString(R.string.byExpertURL)).execute();
             loading =true;
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.menu_home, menu);
+        try {
+            // Associate searchable configuration with the SearchView
+            SearchManager searchManager =
+                    (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+            SearchView searchView =
+                    (SearchView) menu.findItem(R.id.menuItemSearch).getActionView();
+            searchView.setSearchableInfo(
+                    searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    // do your search
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    Log.d("search",s);
+                    // do your search on change or save the last string or...
+                    return false;
+                }
+            });
+
+
+        }catch(Exception e){e.printStackTrace();}
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menuItemSearch:
+                break;
+        }
+        return true;
     }
 }

@@ -6,9 +6,8 @@
     android:layout_height="match_parent"
     tools:context="com.whitebirdtechnology.medicalassistant.ExpertFragment.ByCategoriesFragment.ListBySpecializationAndName.BySpecialization.SubCategoryExpertList.MainActivitySortedListBySubCate">
     <ListView
-        android:layout_marginTop="4dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:dividerHeight="4dp"
+        android:divider="@drawable/list_vie_item_divider"
         android:id="@+id/listViewExpertSub"/>
 </RelativeLayout>
