@@ -10,7 +10,7 @@ import android.content.SharedPreferences;
 
 public class ClsSharePreference {
     SharedPreferences sharedPreferences;
-    public ClsSharePreference(Activity activity){
+    public ClsSharePreference(Context activity){
         sharedPreferences = activity.getSharedPreferences("MedicalAssistanceSharePrf", Context.MODE_PRIVATE);
     }
     public void SetSharePref(String key,String value){

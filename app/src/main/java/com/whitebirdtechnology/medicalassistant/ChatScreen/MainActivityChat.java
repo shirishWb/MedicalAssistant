@@ -39,20 +39,22 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.whitebirdtechnology.medicalassistant.ChatMsgFirebaseSync;
 import com.whitebirdtechnology.medicalassistant.ChatScreen.BookAppointmentPage.MainActivityBookAppointment;
+import com.whitebirdtechnology.medicalassistant.FeedItemUserInfo;
 import com.whitebirdtechnology.medicalassistant.R;
 import com.whitebirdtechnology.medicalassistant.Server.BackgroundTask;
 import com.whitebirdtechnology.medicalassistant.Server.ServerResponse;
 import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreference;
+import com.whitebirdtechnology.medicalassistant.SqlDatabase.SqlDatabaseChat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -64,6 +66,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class MainActivityChat extends AppCompatActivity implements View.OnClickListener,ServerResponse {
@@ -84,6 +87,8 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
     long expertMobNo, userMobNo;
     public static  DatabaseReference database ;
     String uniqueNo;
+    SqlDatabaseChat sqlDatabaseChat;
+    ChatMsgFirebaseSync chatMsgFirebaseSync;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +119,9 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         }
         setContentView(R.layout.activity_main_chat);
         clsSharePreference = new ClsSharePreference(this);
+        chatMsgFirebaseSync = new ChatMsgFirebaseSync(this);
+        chatMsgFirebaseSync.AddDataToSqlFrmFirebase();
+        sqlDatabaseChat = new SqlDatabaseChat(this);
         bundle = getIntent().getBundleExtra("BundleExpert");
         stringImgProf = bundle.getString("EImg");
         stringExpertId = bundle.getString("EId");
@@ -148,7 +156,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         byte[] decodedString = Base64.decode(bundle.getString("EImg"), Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         imageViewProf.setImageBitmap(decodedByte);
-        FirebaseStorage storage = FirebaseStorage.getInstance();
+        /*FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference mountainImagesRef = storageRef.child("ProfileImages/"+"UserId"+expertMobNo+"/"+"Profile.jpg");
         UploadTask uploadTask = mountainImagesRef.putBytes(decodedString);
@@ -162,95 +170,92 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-//                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+//                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();*/
                 DatabaseReference database1 = FirebaseDatabase.getInstance().getReference();
                 DatabaseReference refInfo = database1.child("UserInfo");
-                DatabaseReference userId = refInfo.child(stringExpertMobNo);
+                DatabaseReference userId = refInfo.child(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
+                DatabaseReference info = userId.child(stringExpertMobNo);
                 HashMap<String,String> exrpertInfo = new HashMap<>();
                 exrpertInfo.put("Name",bundle.getString("EName"));
                 exrpertInfo.put("Occupation",bundle.getString("EOccupation"));
                 exrpertInfo.put("IsFavourite", String.valueOf(aBooleanIsFavourite));
                 exrpertInfo.put("UserId",stringExpertId);
-                exrpertInfo.put("ProfilePath","ProfileImages/"+"UserId"+expertMobNo+"/"+"Profile.jpg");
-                userId.setValue(exrpertInfo);
-            }
-        });
-
-        byte[] decodedStringUser = Base64.decode(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)), Base64.DEFAULT);
-        StorageReference mountainImagesRefUser = storageRef.child("ProfileImages/"+"UserId"+userMobNo+"/"+"Profile.jpg");
-        UploadTask uploadTaskUser = mountainImagesRefUser.putBytes(decodedStringUser);
-        uploadTaskUser.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.e("image upload",exception.getMessage());
-                // Handle unsuccessful uploads
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-//                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                DatabaseReference database1 = FirebaseDatabase.getInstance().getReference();
-                DatabaseReference refInfo = database1.child("UserInfo");
-                DatabaseReference userId = refInfo.child(String.valueOf(userMobNo));
-                HashMap<String,String> exrpertInfo = new HashMap<>();
-                exrpertInfo.put("Name",clsSharePreference.GetSharPrf(getString(R.string.SharPrfName)));
-                exrpertInfo.put("Occupation","");
-                exrpertInfo.put("IsFavourite", String.valueOf(false));
-                exrpertInfo.put("UserId",clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
-                exrpertInfo.put("ProfilePath","ProfileImages/"+"UserId"+userMobNo+"/"+"Profile.jpg");
-                userId.setValue(exrpertInfo);
-            }
-        });
+                exrpertInfo.put("ProfilePath",stringImgProf);
+                info.setValue(exrpertInfo);
+                FeedItemUserInfo feedItemUserInfo = new FeedItemUserInfo();
+                feedItemUserInfo.setStringMobileNo(stringExpertMobNo);
+                feedItemUserInfo.setStringId(clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
+                feedItemUserInfo.setStringImgPath(stringImgProf);
+                feedItemUserInfo.setStringIsFav(String.valueOf(false));
+                feedItemUserInfo.setStringName(bundle.getString("EName"));
+                feedItemUserInfo.setStringOccu(bundle.getString("EOccupation"));
+                sqlDatabaseChat.AddUserInfo(feedItemUserInfo);
+           /* }
+        });*/
 
 
-        arrayListChat = new ArrayList<>();
+        final int[] size = {0};
+        arrayListChat = sqlDatabaseChat.GetChatMsg("TABLE"+String.valueOf(uniqueNo));
+        chatAdapter = new ChatAdapter(MainActivityChat.this, arrayListChat);
+        listViewChat.setAdapter(chatAdapter);
         Timer t = new Timer();
-//Set the schedule function and rate
         t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                arrayListChat = sqlDatabaseChat.GetChatMsg("TABLE"+String.valueOf(uniqueNo));
+                chatAdapter.notifyDataSetChanged();
 
-                                  @Override
-                                  public void run() {
-
+            }
+        },0,50000);
+/*
                                       database = FirebaseDatabase.getInstance().getReference();
                                       DatabaseReference ref = database.child("ChatMsg");
-                                      Query phoneQuery = ref.child(uniqueNo);
-                                      phoneQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                      DatabaseReference msg = ref.child(uniqueNo);
+                                      msg.addChildEventListener(new ChildEventListener() {
                                           @Override
-                                          public void onDataChange(DataSnapshot dataSnapshot) {
-                                              int size = 0;
-                                              for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                                                  size++ ;
-                                                  if(arrayListChat.size()<size){
+                                          public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                                              size[0]++;
+                                              if (arrayListChat.size() < size[0]) {
                                                   FeedItemChat feedItemChat = new FeedItemChat();
-                                                  if(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)).equals(String.valueOf(singleSnapshot.child("userMobNo").getValue()))) {
+                                                  if (clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)).equals(String.valueOf(dataSnapshot.child("senderMobNo").getValue()))) {
                                                       feedItemChat.setStringFlag("1");
                                                       feedItemChat.setStringImgPath(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)));
-                                                  }else {
+                                                  } else {
                                                       feedItemChat.setStringFlag("2");
                                                       feedItemChat.setStringImgPath(stringImgProf);
                                                   }
-                                                  feedItemChat.setStringMsg( String.valueOf(singleSnapshot.child("message").getValue()));
-                                                  feedItemChat.setStringTime( String.valueOf(singleSnapshot.child("time").getValue()));
-                                                      feedItemChat.setStringType(String.valueOf(singleSnapshot.child("type").getValue()));
+                                                  feedItemChat.setStringMsg(String.valueOf(dataSnapshot.child("message").getValue()));
+                                                  feedItemChat.setStringTime(String.valueOf(dataSnapshot.child("time").getValue()));
+                                                  feedItemChat.setStringType(String.valueOf(dataSnapshot.child("type").getValue()));
                                                   arrayListChat.add(feedItemChat);
-                                                  chatAdapter = new ChatAdapter(MainActivityChat.this,arrayListChat);
+                                                  chatAdapter = new ChatAdapter(MainActivityChat.this, arrayListChat);
                                                   listViewChat.setAdapter(chatAdapter);
                                                   chatAdapter.notifyDataSetChanged();
-/*
-                                                  Log.e("message", String.valueOf(singleSnapshot.child("message").getValue()));
-*/
-                                                  }
+
                                               }
                                           }
+
+                                          @Override
+                                          public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                                          }
+
+                                          @Override
+                                          public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                                          }
+
+                                          @Override
+                                          public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                                          }
+
                                           @Override
                                           public void onCancelled(DatabaseError databaseError) {
-                                              Log.e("errorMsg", "onCancelled", databaseError.toException());
-                                          }
-                                      });
-                                  }
 
-                              },0,1000);
+                                          }
+                                      });*/
     }
 
     @SuppressLint("RtlHardcoded")
@@ -301,28 +306,43 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
             if(!editTextMsg.getText().toString().isEmpty()){
 
                 Date dt = new Date();
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aa");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS aa");
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm aa");
                 String time = sdf.format(dt);
+                time =time.replace(":","_");
+                time =time.replace("-","_");
+                time = time.replace(".","_");
+                time = time.replace(" ","_");
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference("ChatMsg");
 
                 DatabaseReference usersRef = ref.child(uniqueNo);
-                DatabaseReference userMsg = usersRef.child(time+","+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
 
                 Map<String, String> users = new HashMap<>();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     listViewChat.scrollListBy(arrayListChat.size()-1);
                 }
+
                 users.put("message", editTextMsg.getText().toString());
-                users.put("mobileNo", String.valueOf(userMobNo));
+                users.put("ReceiverMobileNo", String.valueOf(expertMobNo));
                 users.put("readValue","0");
-                users.put("userMobNo",clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
+                users.put("senderMobNo",clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
                 String time2 = sdf2.format(dt);
                 users.put("time",time2);
+                users.put("key","Time"+time+"_"+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
                 users.put("type","1");
+                usersRef.push().setValue(users);
+                FeedItemChat feedItemChat = new FeedItemChat();
+                feedItemChat.setStringMsg(editTextMsg.getText().toString());
+                feedItemChat.setStringMobileNo(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
+                feedItemChat.setStringReadValue("0");
+                feedItemChat.setStringTime(time2);
+                feedItemChat.setStringKeyValue("Time"+time+"_"+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
+                feedItemChat.setStringType("1");
+                feedItemChat.setStringImg(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)));
+                sqlDatabaseChat.CreateTable("TABLE"+String.valueOf(uniqueNo),feedItemChat);
                 editTextMsg.setText("");
-                userMsg.setValue(users);
+
             }
         }
         if(v==imageButtonAttach){
@@ -488,13 +508,18 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageBytes = baos.toByteArray();
         final Date dt = new Date();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aa");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS aa");
         @SuppressLint("SimpleDateFormat") final SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm aa");
-        final String time = sdf.format(dt);
+        String time = sdf.format(dt);
+        time =time.replace(":","_");
+        time =time.replace("-","_");
+        time = time.replace(".","_");
+        time = time.replace(" ","_");
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference mountainImagesRef = storageRef.child("ChatImages/"+"UniqueId"+uniqueNo+"/"+time+".jpg");
         UploadTask uploadTask = mountainImagesRef.putBytes(imageBytes);
+        final String finalTime = time;
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -509,18 +534,31 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                 final FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference("ChatMsg");
                 DatabaseReference usersRef = ref.child(uniqueNo);
-                DatabaseReference userMsg = usersRef.child(time+","+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
 
                 Map<String, String> users = new HashMap<>();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     listViewChat.scrollListBy(arrayListChat.size()-1);
                 }
-                users.put("message","ChatImages/"+"UniqueId"+uniqueNo+"/"+time+".jpg");
-                users.put("userMobNo",clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
+                users.put("message","ChatImages/"+"UniqueId"+uniqueNo+"/"+ finalTime +".jpg");
+                users.put("senderMobNo",clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
+                users.put("ReceiverMobileNo", String.valueOf(expertMobNo));
+                users.put("readValue","0");
+                users.put("key", finalTime +"-"+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
                 String time2 = sdf2.format(dt);
                 users.put("time",time2);
                 users.put("type","2");
-                userMsg.setValue(users);
+                users.put("key","Time"+finalTime+"_"+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
+                usersRef.push().setValue(users);
+                usersRef.push().setValue(users);
+                FeedItemChat feedItemChat = new FeedItemChat();
+                feedItemChat.setStringMsg("ChatImages/"+"UniqueId"+uniqueNo+"/"+ finalTime +".jpg");
+                feedItemChat.setStringMobileNo(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
+                feedItemChat.setStringReadValue("0");
+                feedItemChat.setStringTime(time2);
+                feedItemChat.setStringKeyValue("Time"+finalTime+"_"+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
+                feedItemChat.setStringType("2");
+                feedItemChat.setStringImg(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)));
+                sqlDatabaseChat.CreateTable("TABLE"+String.valueOf(uniqueNo),feedItemChat);
             }
         });
 

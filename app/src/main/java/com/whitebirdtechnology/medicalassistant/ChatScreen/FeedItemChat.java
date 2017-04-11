@@ -8,7 +8,42 @@ public class FeedItemChat {
     String stringMsg;
     String stringFlag;
     String stringTime;
-    String stringImgPath;
+    String stringKeyValue;
+    String stringReadValue;
+    String stringMobileNo;
+    String stringImg;
+
+    public String getStringImg() {
+        return stringImg;
+    }
+
+    public void setStringImg(String stringImg) {
+        this.stringImg = stringImg;
+    }
+
+    public String getStringMobileNo() {
+        return stringMobileNo;
+    }
+
+    public void setStringMobileNo(String stringMobileNo) {
+        this.stringMobileNo = stringMobileNo;
+    }
+
+    public String getStringReadValue() {
+        return stringReadValue;
+    }
+
+    public void setStringReadValue(String stringReadValue) {
+        this.stringReadValue = stringReadValue;
+    }
+
+    public String getStringKeyValue() {
+        return stringKeyValue;
+    }
+
+    public void setStringKeyValue(String stringKeyValue) {
+        this.stringKeyValue = stringKeyValue;
+    }
 
     public String getStringType() {
         return stringType;
@@ -44,11 +79,4 @@ public class FeedItemChat {
         this.stringTime = stringTime;
     }
 
-    public String getStringImgPath() {
-        return stringImgPath;
-    }
-
-    public void setStringImgPath(String stringImgPath) {
-        this.stringImgPath = stringImgPath;
-    }
 }

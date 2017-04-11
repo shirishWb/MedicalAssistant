@@ -47,7 +47,7 @@ public class ChatTab extends Fragment {
                 Query query = firebaseDatabase.child("ChatMsg");
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
                         if (isAdded()) {
                             for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
                                 String stringID = singleSnapshot.getKey();
@@ -64,25 +64,62 @@ public class ChatTab extends Fragment {
                                     Query query1 = singleSnapshot.getRef().orderByKey().limitToLast(1);
                                     query1.addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                        public void onDataChange(final DataSnapshot dataSnapshot1) {
                                             final FeedItemChatHistory feedItemChatHistory = new FeedItemChatHistory();
                                             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                                             DatabaseReference reference = databaseReference.child("UserInfo");
-                                            DatabaseReference reference1 = reference.child(stringAnotherId);
+                                            DatabaseReference ref = reference.child(clsSharePreference.GetSharPrf(getString(R.string.SharPrfMobileNo)));
+                                            DatabaseReference reference1 = ref.child(stringAnotherId);
                                             reference1.addValueEventListener(new ValueEventListener() {
                                                 @Override
-                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    feedItemChatHistory.setStringSenderName(dataSnapshot.child("Name").getValue().toString());
-                                                    feedItemChatHistory.setStringSenderOccu(dataSnapshot.child("Occupation").getValue().toString());
-                                                    String isFav =dataSnapshot.child("IsFavourite").getValue().toString();
+                                                public void onDataChange(DataSnapshot dataSnapshot2) {
+                                                    feedItemChatHistory.setStringSenderName(dataSnapshot2.child("Name").getValue().toString());
+                                                    feedItemChatHistory.setStringSenderOccu(dataSnapshot2.child("Occupation").getValue().toString());
+                                                    String isFav =dataSnapshot2.child("IsFavourite").getValue().toString();
                                                     if(isFav.equals("true")){
                                                         feedItemChatHistory.setaBooleanIsFav(true);
                                                     }else
                                                         feedItemChatHistory.setaBooleanIsFav(false);
 
-                                                    feedItemChatHistory.setStringSenderId(dataSnapshot.child("UserId").getValue().toString());
-                                                    feedItemChatHistory.setStringSenderImgPath(dataSnapshot.child("ProfilePath").getValue().toString());
-                                                    feedItemChatHistory.setStringMobNo(stringAnotherId);
+                                                    feedItemChatHistory.setStringSenderId(dataSnapshot2.child("UserId").getValue().toString());
+                                                    feedItemChatHistory.setStringSenderImgPath(dataSnapshot2.child("ProfilePath").getValue().toString());
+                                                    feedItemChatHistory.setStringMobNo(dataSnapshot2.getKey());
+
+
+
+                                                    for (DataSnapshot snapshot : dataSnapshot1.getChildren()) {
+                                                        String stringLastKey = snapshot.getKey();
+                                                        feedItemChatHistory.setStringLastKey(stringLastKey);
+                                                        if (stringUserId.equals(String.valueOf(snapshot.child("senderMobNo").getValue()))) {
+                                                            feedItemChatHistory.setStringFlag("1");
+                                                        } else {
+                                                            feedItemChatHistory.setStringFlag("2");
+                                                        }
+                                                        feedItemChatHistory.setStringLastMsg(String.valueOf(snapshot.child("message").getValue()));
+                                                        feedItemChatHistory.setStringTime(String.valueOf(snapshot.child("time").getValue()));
+                                                        feedItemChatHistory.setStringType(String.valueOf(snapshot.child("type").getValue()));
+                                                        feedItemChatHistory.setStringAnotherUser(stringAnotherId);
+                                                        Boolean booleanCheck = true;
+                                                        for (int i = 0; i < arrayListFireBase.size(); i++) {
+                                                            FeedItemChatHistory feedItemChatHistory1 = arrayListFireBase.get(i);
+                                                            if (feedItemChatHistory1.getStringAnotherUser().equals(stringAnotherId)) {
+                                                                booleanCheck = false;
+                                                                if (!feedItemChatHistory1.getStringLastKey().equals(stringLastKey)) {
+                                                                    arrayListFireBase.set(i, feedItemChatHistory);
+                                                                    listAdapterChatHistory = new ListAdapterChatHistory(getActivity(), arrayListFireBase);
+                                                                    listViewChat.setAdapter(listAdapterChatHistory);
+                                                                    listAdapterChatHistory.notifyDataSetChanged();
+                                                                }
+                                                            }
+                                                        }
+                                                        if (booleanCheck) {
+                                                            arrayListFireBase.add(feedItemChatHistory);
+                                                            listAdapterChatHistory = new ListAdapterChatHistory(getActivity(), arrayListFireBase);
+                                                            listViewChat.setAdapter(listAdapterChatHistory);
+                                                            listAdapterChatHistory.notifyDataSetChanged();
+                                                        }
+
+                                                    }
                                                 }
 
                                                 @Override
@@ -90,39 +127,7 @@ public class ChatTab extends Fragment {
 
                                                 }
                                             });
-                                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                                String stringLastKey = snapshot.getKey();
-                                                feedItemChatHistory.setStringLastKey(stringLastKey);
-                                                if (stringUserId.equals(String.valueOf(snapshot.child("mobileNo").getValue()))) {
-                                                    feedItemChatHistory.setStringFlag("1");
-                                                } else {
-                                                    feedItemChatHistory.setStringFlag("2");
-                                                }
-                                                feedItemChatHistory.setStringLastMsg(String.valueOf(snapshot.child("message").getValue()));
-                                                feedItemChatHistory.setStringTime(String.valueOf(snapshot.child("time").getValue()));
-                                                feedItemChatHistory.setStringType(String.valueOf(snapshot.child("type").getValue()));
-                                                feedItemChatHistory.setStringAnotherUser(stringAnotherId);
-                                                Boolean booleanCheck = true;
-                                                for (int i = 0; i < arrayListFireBase.size(); i++) {
-                                                    FeedItemChatHistory feedItemChatHistory1 = arrayListFireBase.get(i);
-                                                    if (feedItemChatHistory1.getStringAnotherUser().equals(stringAnotherId)) {
-                                                        booleanCheck = false;
-                                                        if (!feedItemChatHistory1.getStringLastKey().equals(stringLastKey)) {
-                                                            arrayListFireBase.set(i, feedItemChatHistory);
-                                                            listAdapterChatHistory = new ListAdapterChatHistory(getActivity(), arrayListFireBase);
-                                                            listViewChat.setAdapter(listAdapterChatHistory);
-                                                            listAdapterChatHistory.notifyDataSetChanged();
-                                                        }
-                                                    }
-                                                }
-                                                if (booleanCheck) {
-                                                    arrayListFireBase.add(feedItemChatHistory);
-                                                    listAdapterChatHistory = new ListAdapterChatHistory(getActivity(), arrayListFireBase);
-                                                    listViewChat.setAdapter(listAdapterChatHistory);
-                                                    listAdapterChatHistory.notifyDataSetChanged();
-                                                }
 
-                                            }
 
                                         }
 

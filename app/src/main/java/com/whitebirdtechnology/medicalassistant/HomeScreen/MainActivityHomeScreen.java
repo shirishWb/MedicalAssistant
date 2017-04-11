@@ -3,22 +3,37 @@ package com.whitebirdtechnology.medicalassistant.HomeScreen;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.support.v7.app.ActionBar;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.whitebirdtechnology.medicalassistant.ChatMsgFirebaseSync;
+import com.whitebirdtechnology.medicalassistant.FeedItemUserInfo;
 import com.whitebirdtechnology.medicalassistant.LogInScreen.MainActivityLogInScreen;
 import com.whitebirdtechnology.medicalassistant.R;
 import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreference;
+import com.whitebirdtechnology.medicalassistant.SqlDatabase.SqlDatabaseChat;
+
+import java.util.HashMap;
 
 public class MainActivityHomeScreen extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
     TabLayout tabLayout;
@@ -28,6 +43,8 @@ public class MainActivityHomeScreen extends AppCompatActivity implements TabLayo
     TabLayout.Tab tabHome,tabChat,tabExpert,tabFavourite;
     TextView Title;
     ClsSharePreference clsSharePreference;
+    SqlDatabaseChat sqlDatabaseChat;
+    ChatMsgFirebaseSync chatMsgFirebaseSync;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +70,11 @@ public class MainActivityHomeScreen extends AppCompatActivity implements TabLayo
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         setContentView(R.layout.activity_main_home_screen);
         clsSharePreference = new ClsSharePreference(this);
+        chatMsgFirebaseSync = new ChatMsgFirebaseSync(this);
+        chatMsgFirebaseSync.AddDataToSqlFrmFirebase();
+        sqlDatabaseChat = new SqlDatabaseChat(this);
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        clsSharePreference.SetSharePref("Token",refreshedToken);
         tabLayout = (TabLayout)findViewById(R.id.tabLayout);
         viewPager = (ViewPager)findViewById(R.id.viewPager);
         tabHome = tabLayout.newTab().setText("Home");
@@ -73,6 +95,8 @@ public class MainActivityHomeScreen extends AppCompatActivity implements TabLayo
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(this);
         viewPager.setCurrentItem(2);
+
+
 
     }
 

@@ -5,16 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,7 +21,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.whitebirdtechnology.medicalassistant.ChatScreen.FullScreenImageChat.MainActivityFullScreenImgChat;
 import com.whitebirdtechnology.medicalassistant.R;
-import com.whitebirdtechnology.medicalassistant.Server.ImageDownloaderTask;
 
 import java.util.ArrayList;
 
@@ -34,6 +30,7 @@ import java.util.ArrayList;
 
 public class ChatAdapter extends ArrayAdapter {
     Activity activity;
+
     public ChatAdapter(@NonNull Activity activity, @NonNull ArrayList<FeedItemChat> objects) {
         super(activity,0,objects);
         this.activity =activity;
@@ -41,6 +38,7 @@ public class ChatAdapter extends ArrayAdapter {
     private static class ViewHolder {
         TextView msg,time;
         ImageView imageViewProf;
+        int position;
     }
 
 
@@ -50,16 +48,15 @@ public class ChatAdapter extends ArrayAdapter {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         View v = convertView;
-
             final ViewHolder viewHolder;
             if(v ==null){
                 viewHolder = new ViewHolder();
                 LayoutInflater inflater = (LayoutInflater) activity
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                v = inflater.inflate(R.layout.chat_item_send, parent,false);
+               /* v = inflater.inflate(R.layout.chat_item_send, parent,false);
                 viewHolder.imageViewProf = (ImageView)v.findViewById(R.id.imageViewProfChatSend);
                 viewHolder.msg = (TextView)v.findViewById(R.id.textViewChatMsg);
-                viewHolder.time = (TextView)v.findViewById(R.id.textViewChatTime);
+                viewHolder.time = (TextView)v.findViewById(R.id.textViewChatTime);*/
                 int viewType =getItemViewType(position);
                 switch (viewType){
                     case 0:
@@ -92,12 +89,13 @@ public class ChatAdapter extends ArrayAdapter {
             }else {
                viewHolder = (ViewHolder) v.getTag();
             }
-        FeedItemChat feedItemChat = (FeedItemChat) getItem(position);
+        viewHolder.position = position;
+        FeedItemChat feedItemChat = (FeedItemChat) getItem(viewHolder.position);
         switch (feedItemChat.getStringType()){
             case "1":
-                final String stringImageURL = feedItemChat.getStringImgPath();
+                final String stringImageURL = feedItemChat.getStringImg();
                 if(!stringImageURL.isEmpty()) {
-                    byte[] decodedString = Base64.decode(feedItemChat.getStringImgPath(), Base64.DEFAULT);
+                    byte[] decodedString = Base64.decode(feedItemChat.getStringImg(), Base64.DEFAULT);
                     Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                     viewHolder.imageViewProf.setImageBitmap(decodedByte);
 

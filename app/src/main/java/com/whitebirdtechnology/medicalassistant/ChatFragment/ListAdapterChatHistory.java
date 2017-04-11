@@ -38,6 +38,7 @@ public class ListAdapterChatHistory extends ArrayAdapter {
     }
     private static class ViewHolder {
         TextView msg,time,name;
+        int position;
         ImageView imageViewProf;
     }
 
@@ -45,7 +46,6 @@ public class ListAdapterChatHistory extends ArrayAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View v = convertView;
-
         final ViewHolder viewHolder;
         if(v ==null) {
             viewHolder = new ViewHolder();
@@ -60,11 +60,12 @@ public class ListAdapterChatHistory extends ArrayAdapter {
         }else {
             viewHolder = (ViewHolder)v.getTag();
         }
-        final FeedItemChatHistory feedItemChatHistory = (FeedItemChatHistory) getItem(position);
+        viewHolder.position = position;
+        final FeedItemChatHistory feedItemChatHistory = (FeedItemChatHistory) getItem(viewHolder.position);
         viewHolder.name.setText(feedItemChatHistory.getStringSenderName());
         viewHolder.msg.setText(feedItemChatHistory.getStringLastMsg());
         viewHolder.time.setText(feedItemChatHistory.getStringTime());
-        FirebaseStorage storage = FirebaseStorage.getInstance();
+       /* FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         StorageReference islandRef = storageRef.child(feedItemChatHistory.getStringSenderImgPath());
 
@@ -73,25 +74,27 @@ public class ListAdapterChatHistory extends ArrayAdapter {
         islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(final byte[] bytes) {
-                final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);*/
+                byte[] decodedString = Base64.decode(feedItemChatHistory.getStringSenderImgPath(), Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-                viewHolder.imageViewProf.setImageBitmap(bitmap);
+                viewHolder.imageViewProf.setImageBitmap(decodedByte);
 
-                finalV.setOnClickListener(new View.OnClickListener() {
+                v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(activity, MainActivityChat.class);
                         Bundle bundle = new Bundle();
                         bundle.putString("EName",feedItemChatHistory.getStringSenderName());
                         bundle.putString("EOccupation",feedItemChatHistory.getStringSenderOccu());
-                        bundle.putString("EImg",getStringImage(bitmap));
+                        bundle.putString("EImg",feedItemChatHistory.getStringSenderImgPath());
                         bundle.putString("EId",feedItemChatHistory.getStringSenderId());
                         bundle.putBoolean("BoolFav",feedItemChatHistory.getaBooleanIsFav());
                         bundle.putString("EMobNo",feedItemChatHistory.getStringMobNo());
                         intent.putExtra("BundleExpert",bundle);
                         activity.startActivity(intent);
                     }
-                });
+                });/*
                 // Data for "images/island.jpg" is returns, use this as needed
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -100,8 +103,9 @@ public class ListAdapterChatHistory extends ArrayAdapter {
                 // Handle any errors
             }
         });
-
+*/
         return v;
+
         }
     public String getStringImage(Bitmap bmp){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

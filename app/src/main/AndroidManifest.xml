@@ -12,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".LaunchScreen.MainActivityLaunchScreen"
             android:screenOrientation="portrait"
@@ -22,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".LogInScreen.MainActivityLogInScreen"
             android:screenOrientation="portrait"
@@ -43,6 +45,7 @@
         <activity android:name=".ChatScreen.FullScreenImageChat.MainActivityFullScreenImgChat"
             android:theme="@style/fullScreenImage">
         </activity>
+
     </application>
 
 </manifest>

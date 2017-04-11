@@ -6,7 +6,9 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -30,6 +32,7 @@ public class ExpertTab extends Fragment implements TabLayout.OnTabSelectedListen
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_expert_tab,container,false);
+        setHasOptionsMenu(true);
         if(!isAdded()){
             return view;
         }
@@ -77,5 +80,17 @@ public class ExpertTab extends Fragment implements TabLayout.OnTabSelectedListen
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menuItemSearch:
+                Log.d("ExpertMenu","ExpertMenu");
+                tabLayout.setVisibility(View.GONE);
+                break;
+        }
+
+        return true;
     }
 }
