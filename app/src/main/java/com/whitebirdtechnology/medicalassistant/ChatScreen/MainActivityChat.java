@@ -69,7 +69,7 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-public class MainActivityChat extends AppCompatActivity implements View.OnClickListener,ServerResponse {
+public class MainActivityChat extends AppCompatActivity implements View.OnClickListener,ServerResponse,RefreshAdapterInterface {
     TextView textViewName,textViewOccupation,textViewIsTyping;
     ImageView imageViewProf;
     ImageButton imageButtonCall,imageButtonAttach,imageButtonOption,imageButtonAdd,imageButtonSend;
@@ -198,15 +198,7 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         arrayListChat = sqlDatabaseChat.GetChatMsg("TABLE"+String.valueOf(uniqueNo));
         chatAdapter = new ChatAdapter(MainActivityChat.this, arrayListChat);
         listViewChat.setAdapter(chatAdapter);
-        Timer t = new Timer();
-        t.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                arrayListChat = sqlDatabaseChat.GetChatMsg("TABLE"+String.valueOf(uniqueNo));
-                chatAdapter.notifyDataSetChanged();
 
-            }
-        },0,50000);
 /*
                                       database = FirebaseDatabase.getInstance().getReference();
                                       DatabaseReference ref = database.child("ChatMsg");
@@ -340,8 +332,11 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                 feedItemChat.setStringKeyValue("Time"+time+"_"+clsSharePreference.GetSharPrf(getString(R.string.SharPrfUID)));
                 feedItemChat.setStringType("1");
                 feedItemChat.setStringImg(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)));
-                sqlDatabaseChat.CreateTable("TABLE"+String.valueOf(uniqueNo),feedItemChat);
+               // sqlDatabaseChat.CreateTable("TABLE"+String.valueOf(uniqueNo),feedItemChat);
                 editTextMsg.setText("");
+                arrayListChat = sqlDatabaseChat.GetChatMsg("TABLE"+String.valueOf(uniqueNo));
+                chatAdapter = new ChatAdapter(MainActivityChat.this, arrayListChat);
+                listViewChat.setAdapter(chatAdapter);
 
             }
         }
@@ -559,6 +554,9 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
                 feedItemChat.setStringType("2");
                 feedItemChat.setStringImg(clsSharePreference.GetSharPrf(getString(R.string.SharPrfProImg)));
                 sqlDatabaseChat.CreateTable("TABLE"+String.valueOf(uniqueNo),feedItemChat);
+                arrayListChat = sqlDatabaseChat.GetChatMsg("TABLE"+String.valueOf(uniqueNo));
+                chatAdapter = new ChatAdapter(MainActivityChat.this, arrayListChat);
+                listViewChat.setAdapter(chatAdapter);
             }
         });
 
@@ -569,5 +567,12 @@ public class MainActivityChat extends AppCompatActivity implements View.OnClickL
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;
+    }
+
+    @Override
+    public void RefreshAdapter() {
+        arrayListChat = sqlDatabaseChat.GetChatMsg("TABLE"+String.valueOf(uniqueNo));
+        chatAdapter = new ChatAdapter(MainActivityChat.this, arrayListChat);
+        listViewChat.setAdapter(chatAdapter);
     }
 }

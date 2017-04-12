@@ -27,6 +27,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.whitebirdtechnology.medicalassistant.ChatMsgFirebaseSync;
+import com.whitebirdtechnology.medicalassistant.ChatScreen.RefreshAdapterInterface;
 import com.whitebirdtechnology.medicalassistant.FeedItemUserInfo;
 import com.whitebirdtechnology.medicalassistant.LogInScreen.MainActivityLogInScreen;
 import com.whitebirdtechnology.medicalassistant.R;
@@ -35,7 +36,7 @@ import com.whitebirdtechnology.medicalassistant.SqlDatabase.SqlDatabaseChat;
 
 import java.util.HashMap;
 
-public class MainActivityHomeScreen extends AppCompatActivity implements TabLayout.OnTabSelectedListener {
+public class MainActivityHomeScreen extends AppCompatActivity implements TabLayout.OnTabSelectedListener,RefreshAdapterInterface {
     TabLayout tabLayout;
     ViewPager viewPager;
     PagerAdapter pagerAdapter;
@@ -160,6 +161,11 @@ public class MainActivityHomeScreen extends AppCompatActivity implements TabLayo
 
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void RefreshAdapter() {
 
     }
 }

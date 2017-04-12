@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.whitebirdtechnology.medicalassistant.ChatScreen.FeedItemChat;
+import com.whitebirdtechnology.medicalassistant.ChatScreen.RefreshAdapterInterface;
 import com.whitebirdtechnology.medicalassistant.Sharepreference.ClsSharePreference;
 import com.whitebirdtechnology.medicalassistant.SqlDatabase.SqlDatabaseChat;
 
@@ -79,7 +80,18 @@ public class ChatMsgFirebaseSync {
                             feedItemChat.setStringTime(String.valueOf(dataSnapshot.child("time").getValue()));
                             feedItemChat.setStringKeyValue(String.valueOf(dataSnapshot.child("key").getValue()));
                             feedItemChat.setStringType(String.valueOf(dataSnapshot.child("type").getValue()));
-                            sqlDatabaseChat.CreateTable("TABLE"+String.valueOf(uniqueNo),feedItemChat);
+                            long expertMobNo = Long.parseLong(String.valueOf(dataSnapshot.child("ReceiverMobileNo").getValue()));
+                            long userMobNo = Long.parseLong(String.valueOf(dataSnapshot.child("senderMobNo").getValue()));
+                            String uniqueNo2;
+                            if(expertMobNo > userMobNo){
+                                uniqueNo2 = String.valueOf(userMobNo)+String.valueOf(expertMobNo);
+                            }else {
+                                uniqueNo2 = String.valueOf(expertMobNo)+String.valueOf(userMobNo);
+                            }
+                            sqlDatabaseChat.CreateTable("TABLE"+String.valueOf(uniqueNo2),feedItemChat);
+                            RefreshAdapterInterface refreshAdapterInterface = null;
+                            refreshAdapterInterface = (RefreshAdapterInterface)context;
+                            refreshAdapterInterface.RefreshAdapter();
                         }
 
                         @Override
